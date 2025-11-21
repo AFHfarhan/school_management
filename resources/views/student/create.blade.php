@@ -19,16 +19,12 @@
                     <div class="col-lg-6">
                         <label for="inputTanggal" class="form-label">Tanggal</label>
                         <div class="input-group" id="inputTanggal">
-                            <input type="text" class="form-control" placeholder="Tanggal" name="formgruptanggal" id="formgruptanggal" value="{{ old('formgruptanggal') }}" aria-label="Tanggal">
-                            <span class="input-group-text form-control" style="display:inline-block;">/</span>
-                            <input type="text" class="form-control" placeholder="Bulan" name="formgrupbulan" id="formgrupbulan"  value="{{ old('formgrupbulan') }}" aria-label="Bulan">
-                            <span class="input-group-text form-control" style="display:inline-block;">/</span>
-                            <input type="text" class="form-control" placeholder="Tahun" name="formgruptahun" id="formgruptahun"  value="{{ old('formgruptahun') }}" aria-label="Tahun">
+                            <input type="text" class="form-control" placeholder="Pilih Tanggal" name="data[register_date]" id="registerdate" value="{{ old('data[register_date]') }}" aria-label="Tanggal">
                         </div>
                         <div class="row" style="margin-top:20px;">
                             <div class="col-lg-6">
                                 <label for="inputTingkat" class="form-label">Tingkat</label>
-                                <input type="text" class="form-control" name="data[grade]" value="{{ old('data[grade]') }}" id="inputTingkat">
+                                <input type="text" class="form-control" name="data[grade]" inputmode="numeric" oninput="this.value = this.value.replace(/[^\d]/g,'')"  pattern="\d*"  maxlength="2" autocomplete="off" value="{{ old('data[grade]') }}" id="inputTingkat">
                             </div>
                             <div class="col-lg-6">
                                 <label for="inputProgram" class="form-label">Program</label>
@@ -70,11 +66,7 @@
                                     <input type="text" class="form-control" name="data[personal][birthplace]" value="{{ old('data[personal][birthplace]') }}" id="formgrupTTLTempat" >
                                 </div>
                                 <div class="input-group col-md-8">
-                                    <input type="text" class="form-control" placeholder="tgl" name="formgrupTTLTanggal" value="{{ old('formgrupTTLTanggal') }}" id="formgrupTTLTanggal" aria-label="Tanggal">
-                                    <span class="input-group-text form-control" style="display:inline-block;">/</span>
-                                    <input type="text" class="form-control" placeholder="bln" name="formgrupTTLBulan" value="{{ old('formgrupTTLBulan') }}" id="formgrupTTLBulan" aria-label="Bulan">
-                                    <span class="input-group-text form-control" style="display:inline-block;">/</span>
-                                    <input type="text" class="form-control" placeholder="thn" name="formgrupTTLTahun" value="{{ old('formgrupTTLTahun') }}" id="formgrupTTLTahun" aria-label="Tahun">    
+                                    <input type="text" class="form-control" placeholder="Pilih Tanggal" name="data[personal][birth_date]" id="birthdate" value="{{ old('data[personal][birth_date]') }}" aria-label="Tanggal Lahir">
                                 </div>
                             </div>
                         </div>
@@ -91,17 +83,17 @@
                         </select>
 
                         <label for="inputKks" class="form-label" style="margin-top:20px;">No.KKS</label><span style="display:inline-block; margin-left:50px;font-weight: 200;font-size: small;font-style: italic;">*KKS : Kartu Keluarga Sejahtera</span>
-                        <input type="text" class="form-control" name="data[personal][kks_no]" value="{{ old('data[personal][kks_no]') }}" id="inputKks" >
+                        <input type="text" class="form-control" name="data[personal][kks_no]" inputmode="numeric" oninput="this.value = this.value.replace(/[^\d]/g,'')"  pattern="\d*"  maxlength="15" autocomplete="off" value="{{ old('data[personal][kks_no]') }}" id="inputKks" >
 
                         <label for="radiobuttonKPS" class="form-label" style="margin-top:20px;">Apakah Penerima KPS </label><span style="display:inline-block; margin-left:50px;font-weight: 200;font-size: small;font-style: italic;">*KPS : Kartu Perlindungan Sosial</span>
                         <div id="radiobuttonKPS" class="row form-check">
-                            <div class="form-check col-md-6">
+                            <div class="form-check col-md-6" id="rbshowKps">
                                 <input class="form-check-input " type="radio" name="data[personal][kps]" value="ya" id="rbKpsYa">
                                 <label class="form-check-label " for="rbKpsYa">
                                     Ya
                                 </label>
                             </div>
-                            <div class="form-check  col-md-6">
+                            <div class="form-check  col-md-6" >
                                 <input class="form-check-input " type="radio" name="data[personal][kps]" value="tidak" id="rbKpsTidak" checked>
                                 <label class="form-check-label " for="rbKpsTidak">
                                     Tidak
@@ -109,8 +101,10 @@
                             </div>
                         </div>
 
-                        <label for="inputKps" class="form-label" style="margin-top:20px;">No.KPS</label>
-                        <input type="text" class="form-control" name="data[personal][kps_no]" value="{{ old('data[personal][kps_no]') }}" id="inputKps" >
+                        <div id="kpsField">
+                            <label for="inputKps" class="form-label" style="margin-top:20px;">No.KPS</label>
+                            <input type="text" class="form-control" name="data[personal][kps_no]" inputmode="numeric" oninput="this.value = this.value.replace(/[^\d]/g,'')"  pattern="\d*"  maxlength="15" autocomplete="off" value="{{ old('data[personal][kps_no]') }}" id="inputKps" >
+                        </div>
 
                         <label for="radiobuttonKIP" class="form-label" style="margin-top:20px;">Apakah Penerima KIP</label><span style="display:inline-block; margin-left:50px;font-weight: 200;font-size: small;font-style: italic;">*KIP : Kartu Indonesia Pintar</span>
                         <div id="radiobuttonKIP" class="row form-check">
@@ -128,12 +122,13 @@
                             </div>
                         </div>
 
-                        <label for="inputNoKip" class="form-label" style="margin-top:20px;">No.KIP</label>
-                        <input type="text" class="form-control" name="data[personal][kip_no]" value="{{ old('data[personal][kip_no]') }}" id="inputNoKip" >
+                        <div id="kipField">
+                            <label for="inputNoKip" class="form-label" style="margin-top:20px;">No.KIP</label>
+                            <input type="text" class="form-control" name="data[personal][kip_no]" inputmode="numeric" oninput="this.value = this.value.replace(/[^\d]/g,'')"  pattern="\d*"  maxlength="15" autocomplete="off" value="{{ old('data[personal][kip_no]') }}" id="inputNoKip" >
 
-                        <label for="inputNamaKip" class="form-label" style="margin-top:20px;">Nama KIP</label>
-                        <input type="text" class="form-control" name="data[personal][kip_name]" value="{{ old('data[personal][kip_name]') }}" id="inputNamaKip" >
-
+                            <label for="inputNamaKip" class="form-label" style="margin-top:20px;">Nama KIP</label>
+                            <input type="text" class="form-control" name="data[personal][kip_name]" value="{{ old('data[personal][kip_name]') }}" id="inputNamaKip" >
+                        </div>
                     </div>
                     <div class="col-lg-6">
                         <label for="inputSekolahAsal" class="form-label">Nama Sekolah Asal</label>
@@ -143,10 +138,10 @@
                         <textarea class="form-control" placeholder="" name="data[personal][address]" value="{{ old('data[personal][address]') }}" id="inputTempatTinggal"></textarea>
 
                         <label for="inputNoTelp" class="form-label" style="margin-top:20px;">No Telp Rumah</label>
-                        <input type="text" class="form-control" name="data[personal][homephone]" value="{{ old('data[personal][homephone]') }}" id="inputNoTelp" >
+                        <input type="text" class="form-control" name="data[personal][homephone]" inputmode="numeric" oninput="this.value = this.value.replace(/[^\d]/g,'')"  pattern="\d*"  maxlength="13" autocomplete="off" value="{{ old('data[personal][homephone]') }}" id="inputNoTelp" >
 
                         <label for="inputNoHp" class="form-label" style="margin-top:20px;">No. HP</label>
-                        <input type="text" class="form-control" name="data[personal][phone]" value="{{ old('data[personal][phone]') }}" id="inputNoHp" >
+                        <input type="text" class="form-control" name="data[personal][phone]" inputmode="numeric" oninput="this.value = this.value.replace(/[^\d]/g,'')"  pattern="\d*"  maxlength="13" autocomplete="off" value="{{ old('data[personal][phone]') }}" id="inputNoHp" >
 
                         <label for="inputEmail" class="form-label" style="margin-top:20px;">Email Pribadi</label>
                         <input type="email" class="form-control" name="data[personal][email]" value="{{ old('data[personal][email]') }}" id="inputEmail" >
@@ -162,7 +157,7 @@
                         <input type="text" class="form-control" name="data[parent][dad][name]" value="{{ old('data[parent][dad][name]') }}" id="inputNamaAyah">
 
                         <label for="inputTLAyah" class="form-label" style="margin-top:20px;">Tanggal Lahir</label>
-                        <input type="text" class="form-control" name="data[parent][dad][birthdate]" value="{{ old('data[parent][dad][birthdate]') }}" id="inputTLAyah">
+                        <input type="text" class="form-control" name="data[parent][dad][birthdate]" value="{{ old('data[parent][dad][birthdate]') }}" placeholder="Pilih Tanggal" id="inputTLAyah">
 
                         <label for="inputPendidikanAyah" class="form-label" style="margin-top:20px;">Pendidikan</label>
                         <input type="text" class="form-control" name="data[parent][dad][education]" value="{{ old('data[parent][dad][education]') }}" id="inputPendidikanAyah">
@@ -172,7 +167,7 @@
                         <input type="text" class="form-control" name="data[parent][dad][job]" value="{{ old('data[parent][dad][job]') }}" id="inputPekerjaanAyah">
 
                         <label for="inputPBAyah" class="form-label" style="margin-top:20px;">Penghasilan Bulanan</label>
-                        <input type="text" class="form-control" name="data[parent][dad][salary]" value="{{ old('data[parent][dad][salary]') }}" id="inputPBAyah">
+                        <input type="text" class="form-control" name="data[parent][dad][salary]" id="inputPBAyah">
 
                     </div>
                 </div>
@@ -183,7 +178,7 @@
                         <input type="text" class="form-control" name="data[parent][mom][name]" value="{{ old('data[parent][mom][name]') }}" id="inputNamaIbu">
 
                         <label for="inputTLIbu" class="form-label" style="margin-top:20px;">Tanggal Lahir</label>
-                        <input type="text" class="form-control" name="data[parent][mom][birthdate]" value="{{ old('data[parent][mom][birthdate]') }}" id="inputTLIbu">
+                        <input type="text" class="form-control" name="data[parent][mom][birthdate]" value="{{ old('data[parent][mom][birthdate]') }}" placeholder="Pilih Tanggal" id="inputTLIbu">
 
                         <label for="inputPendidikanIbu" class="form-label" style="margin-top:20px;">Pendidikan</label>
                         <input type="text" class="form-control" name="data[parent][mom][education]" value="{{ old('data[parent][mom][nameducatione]') }}" id="inputPendidikanIbu">
@@ -193,20 +188,28 @@
                         <input type="text" class="form-control" name="data[parent][mom][job]" value="{{ old('data[parent][mom][job]') }}" id="inputPekerjaanIbu">
 
                         <label for="inputPBIbu" class="form-label" style="margin-top:20px;">Penghasilan Bulanan</label>
-                        <input type="text" class="form-control" name="data[parent][mom][salary]" value="{{ old('data[parent][mom][salary]') }}" id="inputPBIbu">
+                        <input type="text" class="form-control" name="data[parent][mom][salary]" id="inputPBIbu">
 
                     </div>
                 </div>
                 <hr></hr>
-                <h7 class="m-0 font-weight-bold text-primary">Identitas Wali</h7>
-                <hr></hr> 
                 <div class="row">
+                    <div class="col-lg-6">
+                        <h7 class="m-0 font-weight-bold text-primary">Identitas Wali</h7>
+                    </div>
+                    <div class="col-lg-6" style="text-align:left;">
+                        <input class="form-check-input" type="checkbox" name="data[parent][is_sub_active]" value="yes" id="toggleOptional" aria-controls="optionalFields" aria-expanded="true" >
+                        <label class="form-check-label" for="toggleOptional"><strong>Ada</strong></label>
+                    </div>
+                </div>
+                <hr></hr> 
+                <div class="row" id="optionalFields">
                     <div class="col-lg-6">
                         <label for="inputNamaWali" class="form-label">Nama Wali</label>
                         <input type="text" class="form-control" name="data[parent][sub][name]" value="{{ old('data[parent][sub][name]') }}" id="inputNamaWali">
 
                         <label for="inputTLWali" class="form-label" style="margin-top:20px;">Tanggal Lahir</label>
-                        <input type="text" class="form-control" name="data[parent][sub][birthdate]" value="{{ old('data[parent][sub][birthdate]') }}" id="inputTLWali">
+                        <input type="text" class="form-control" name="data[parent][sub][birthdate]" value="{{ old('data[parent][sub][birthdate]') }}" placeholder="Pilih Tanggal" id="inputTLWali">
 
                         <label for="inputPendidikanWali" class="form-label" style="margin-top:20px;">Pendidikan</label>
                         <input type="text" class="form-control" name="data[parent][sub][education]" value="{{ old('data[parent][sub][education]') }}" id="inputPendidikanWali">
@@ -216,7 +219,7 @@
                         <input type="text" class="form-control" name="data[parent][sub][job]" id="inputPekerjaanWali">
 
                         <label for="inputPBWali" class="form-label" style="margin-top:20px;">Penghasilan Bulanan</label>
-                        <input type="text" class="form-control" name="data[parent][sub][salary]" value="{{ old('data[parent][sub][salary]') }}" id="inputPBWali">
+                        <input type="text" class="form-control" name="data[parent][sub][salary]" id="inputPBWali">
 
                     </div>
                 </div>
@@ -225,9 +228,10 @@
                 <hr></hr>
                 <div class="row">
                     <div class="table-responsive">
-                        <table class="table table-bordered" width="100%" cellspacing="0">
+                        <table class="table table-bordered" width="100%" cellspacing="0" id="itemsTable">
                             <thead>
                                 <tr>
+                                    <th>No</th>
                                     <th>Jenis Prestasi</th>
                                     <th>Tingkat</th>
                                     <th>Nama Prestasi</th>
@@ -235,37 +239,33 @@
                                     <th>Penyelenggaraan</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td><input type="text" class="form-control" name="data[achievement][type]" id="jenisPrestasi1"></td>
-                                    <td><input type="text" class="form-control" name="data[achievement][grade]" id="tingkatPrestasi1"></td>
-                                    <td><input type="text" class="form-control" name="data[achievement][name]" id="namaPrestasi1"></td>
-                                    <td><input type="text" class="form-control" name="data[achievement][year]" id="tahunPrestasi1"></td>
-                                    <td><textarea class="form-control" id="penyelenggaraPrestasi1" name="data[achievement][credit]" value="{{ old('data[achievement][credit]') }}" rows="2" cols="5"></textarea></td>
+                            <tbody id="tableBody">
+                                <tr class="data-row">
+                                    <td class="row-index"></td>
+                                    <td><input type="text" class="form-control" name="data[achievement][0][type]" id="jenisPrestasi"></td>
+                                    <td><input type="text" class="form-control" name="data[achievement][0][grade]" id="tingkatPrestasi"></td>
+                                    <td><input type="text" class="form-control" name="data[achievement][0][name]" id="namaPrestasi"></td>
+                                    <td><input type="text" class="form-control" name="data[achievement][0][year]" inputmode="numeric" oninput="this.value = this.value.replace(/[^\d]/g,'')"  pattern="\d*"  maxlength="4" autocomplete="off" id="tahunPrestasi"></td>
+                                    <td><textarea class="form-control" id="penyelenggaraPrestasi" name="data[achievement][0][credit]" rows="2" cols="5">{{ old('data[achievement][credit]') }}</textarea>
+                                    <button type="button" class="btn btn-sm btn-danger remove-row">Remove</button></td>
                                 </tr>
-                                <tr>
-                                <td><input type="text" class="form-control" name="jenisPrestasi2" id="jenisPrestasi2"></td>
-                                    <td><input type="text" class="form-control" name="tingkatPrestasi2" id="tingkatPrestasi2"></td>
-                                    <td><input type="text" class="form-control" name="namaPrestasi2" id="namaPrestasi2"></td>
-                                    <td><input type="text" class="form-control" name="tahunPrestasi2" id="tahunPrestasi2"></td>
-                                    <td><textarea class="form-control" name="penyelenggaraPrestasi2" id="penyelenggaraPrestasi2" rows="2" cols="5"></textarea></td>
+                                <!-- Hidden template row for cloning -->
+                                <template id="rowTemplate">
+                                <tr class="data-row">
+                                    <td class="row-index"></td>
+                                    <td><input type="text" class="form-control" data-field="type"></td>
+                                    <td><input type="text" class="form-control" data-field="grade"></td>
+                                    <td><input type="text" class="form-control" data-field="name"></td>
+                                    <td><input type="text" class="form-control" inputmode="numeric" oninput="this.value = this.value.replace(/[^\d]/g,'')"  pattern="\d*"  maxlength="13" autocomplete="off" data-field="year"></td>
+                                    <td><textarea class="form-control" data-field="credit" rows="2" cols="5"></textarea>
+                                    <button type="button" class="btn btn-sm btn-danger remove-row">Remove</button></td>
                                 </tr>
-                                <tr>
-                                    <td><input type="text" class="form-control" name="jenisPrestasi3" id="jenisPrestasi3"></td>
-                                    <td><input type="text" class="form-control" name="tingkatPrestasi3" id="tingkatPrestasi3"></td>
-                                    <td><input type="text" class="form-control" name="namaPrestasi3" id="namaPrestasi3"></td>
-                                    <td><input type="text" class="form-control" name="tahunPrestasi3" id="tahunPrestasi3"></td>
-                                    <td><textarea class="form-control" name="penyelenggaraPrestasi3" id="penyelenggaraPrestasi3" rows="2" cols="5"></textarea></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="text" class="form-control" name="jenisPrestasi4" id="jenisPrestasi4"></td>
-                                    <td><input type="text" class="form-control" name="tingkatPrestasi4" id="tingkatPrestasi4"></td>
-                                    <td><input type="text" class="form-control" name="namaPrestasi4" id="namaPrestasi4"></td>
-                                    <td><input type="text" class="form-control" name="tahunPrestasi4" id="tahunPrestasi4"></td>
-                                    <td><textarea class="form-control" name="penyelenggaraPrestasi4" id="penyelenggaraPrestasi4" rows="2" cols="5"></textarea></td>
-                                </tr>
+                                </template>
                             </tbody>
                         </table>
+                    </div>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <button type="button" id="addRow" class="btn btn-sm btn-success">Add row</button>
                     </div>
                 </div>
                 <hr></hr>
@@ -332,19 +332,20 @@
                                 <input class="form-check-input " type="checkbox" name="data[other][reference][]" value="guru" id="cbdrf5">
                                 <label class="form-check-label " for="cbdrf5">
                                     Guru
-                                </label> <input type="text" class="form-control" id="inputGuruRef" name="inputGuruRef" value="">
+                                </label> <input type="text" class="form-control" id="inputGuruRef" name="data[other][reference_guru]" value="">
                             </div>
                             <div class="form-check  col-md-8">
                                 <input class="form-check-input " type="checkbox" name="data[other][reference][]" value="teman" id="cbdrf6">
                                 <label class="form-check-label " for="cbdrf6">
                                     Teman
-                                </label><input type="text" class="form-control" id="inputTemanRef" name="inputTemanRef" value="">
+                                </label><input type="text" class="form-control" id="inputTemanRef" name="data[other][reference_teman]" value="">
                             </div>
-                            <div class="form-check  col-md-6">
+                            <div class="form-check  col-md-8">
                                 <input class="form-check-input " type="checkbox" name="data[other][reference][]" value="lainnya" id="cbdrf7">
                                 <label class="form-check-label " for="cbdrf7">
                                     Lainnya
                                 </label>
+                                <input type="text" class="form-control" id="inputLainnyaRef" name="data[other][reference_lainnya]" value="">
                             </div>
                         </div>
                     </div>
@@ -365,5 +366,287 @@
         // Reset the form to its default state
         document.getElementById('studentForm').reset();
     });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    flatpickr("#registerdate", { dateFormat: "d/m/Y", allowInput: true });
+    flatpickr("#birthdate", { dateFormat: "d/m/Y", allowInput: true });
+    flatpickr("#inputTLAyah", { dateFormat: "d/m/Y", allowInput: true });
+    flatpickr("#inputTLIbu", { dateFormat: "d/m/Y", allowInput: true });
+    flatpickr("#inputTLWali", { dateFormat: "d/m/Y", allowInput: true });
+
+    // Toggle logic
+    const toggle = document.getElementById('toggleOptional');
+    const container = document.getElementById('optionalFields');
+
+    // Utility: find form controls inside container
+    function formControlsIn(element) {
+        return Array.from(element.querySelectorAll('input, select, textarea, button'))
+        .filter(el => el.type !== 'hidden');
+    }
+
+    // Hide or show and manage disabled state and validation classes
+    function setVisibility(show) {
+        container.style.display = show ? '' : 'none';
+        container.setAttribute('aria-hidden', show ? 'false' : 'true');
+
+        formControlsIn(container).forEach(control => {
+        if (show) {
+            control.disabled = false;
+            // restore aria-invalid if it had validation (leave classes intact)
+        } else {
+            control.disabled = true;
+            // remove client-side validation styling to avoid confusing appearance
+            control.classList.remove('is-invalid');
+        }
+        });
+
+        toggle.setAttribute('aria-expanded', show ? 'true' : 'false');
+    }
+
+    // Initialize using current toggle state
+    setVisibility(toggle.checked);
+
+    // Remember values when hiding (so they are preserved when shown again)
+    const preserved = new Map();
+    function preserveValues() {
+        formControlsIn(container).forEach(control => {
+        preserved.set(control.name || control.id, control.value);
+        });
+    }
+    function restoreValues() {
+        formControlsIn(container).forEach(control => {
+        const key = control.name || control.id;
+        if (preserved.has(key)) control.value = preserved.get(key);
+        });
+    }
+
+    // Handle change event
+    toggle.addEventListener('change', function () {
+        if (!this.checked) {
+        preserveValues();
+        setVisibility(false);
+        } else {
+        restoreValues();
+        setVisibility(true);
+        }
+    });
+
+    // If the container should be hidden by default based on server validation errors,
+    // keep it visible so users see errors. Hide only if no validation errors exist.
+    (function conditionalInitialHide() {
+        const hasServerErrors = container.querySelectorAll('.is-invalid').length > 0;
+        if (!hasServerErrors) {
+        // If the toggle is unchecked (user wants hidden), ensure container is hidden
+        if (!toggle.checked) setVisibility(false);
+        } else {
+        // make sure toggle reflects visible state when server validation found errors
+        toggle.checked = true;
+        setVisibility(true);
+        }
+    })();
+  });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const radioYes = document.getElementById('rbKpsYa');
+        const radioNo = document.getElementById('rbKpsTidak');
+        const container = document.getElementById('kpsField');
+        const radioKipYes = document.getElementById('rbKipYa');
+        const radioKipNo = document.getElementById('rbKipTidak');
+        const containerKip = document.getElementById('kipField');
+        const radioGuru = document.getElementById('cbdrf5');
+        const radioTeman = document.getElementById('cbdrf6');
+        const radioLainnya = document.getElementById('cbdrf7');
+        const containerGuru = document.getElementById('inputGuruRef');
+        const containerTeman = document.getElementById('inputTemanRef');
+        const containerLainnya = document.getElementById('inputLainnyaRef');
+
+        // Helpers
+        function controls(el) {
+            return Array.from(el.querySelectorAll('input, select, textarea')).filter(i => i.type !== 'hidden');
+        }
+
+        function setGroupVisible(group, visible) {
+            group.style.display = visible ? '' : 'none';
+            group.setAttribute('aria-hidden', visible ? 'false' : 'true');
+            controls(group).forEach(c => {
+            c.disabled = !visible;
+            if (!visible) c.classList.remove('is-invalid');
+            });
+        }
+
+        // Preserve/restore maps
+        const preserved = {
+            A: new Map(),
+            B: new Map()
+        };
+
+        function preserve(group, map) {
+            controls(group).forEach(c => map.set(c.name || c.id, c.value));
+        }
+        function restore(group, map) {
+            controls(group).forEach(c => {
+            const key = c.name || c.id;
+            if (map.has(key)) c.value = map.get(key);
+            });
+        }
+
+        // Initialize based on old values or validation errors
+        (function init() {
+            const errsA = container.querySelectorAll('.is-invalid').length > 0;
+            const errsB = containerKip.querySelectorAll('.is-invalid').length > 0;
+            const errsC = containerGuru.querySelectorAll('.is-invalid').length > 0;
+            const errsD = containerTeman.querySelectorAll('.is-invalid').length > 0;
+            const errsE = containerLainnya.querySelectorAll('.is-invalid').length > 0;
+
+            // If server validation has errors in a group, force it visible and set its radio to Yes
+            if (errsA) { radioYes.checked = true; setGroupVisible(container, true); } 
+            else setGroupVisible(container, radioYes.checked);
+
+            if (errsB) { radioKipYes.checked = true; setGroupVisible(containerKip, true); } 
+            else setGroupVisible(containerKip, radioKipYes.checked);
+
+            if (errsC) { radioGuru.checked = true; setGroupVisible(containerGuru, true); } 
+            else setGroupVisible(containerGuru, radioGuru.checked);
+
+            if (errsD) { radioTeman.checked = true; setGroupVisible(containerTeman, true); } 
+            else setGroupVisible(containerTeman, radioTeman.checked);
+
+            if (errsE) { radioLainnya.checked = true; setGroupVisible(containerLainnya, true); } 
+            else setGroupVisible(containerLainnya, radioLainnya.checked);
+
+            // If neither radio was set (first load), you can default to hidden both; current code respects checked states
+        })();
+
+        // Radio handlers (independent)
+        radioYes.addEventListener('change', function () {
+            if (this.checked) {
+            restore(container, preserved.A);
+            setGroupVisible(container, true);
+            }
+        });
+        radioNo.addEventListener('change', function () {
+            if (this.checked) {
+            preserve(container, preserved.A);
+            setGroupVisible(container, false);
+            }
+        });
+
+        radioKipYes.addEventListener('change', function () {
+            if (this.checked) {
+            restore(containerKip, preserved.B);
+            setGroupVisible(containerKip, true);
+            }
+        });
+        radioKipNo.addEventListener('change', function () {
+            if (this.checked) {
+            preserve(containerKip, preserved.B);
+            setGroupVisible(containerKip, false);
+            }
+        });
+
+        radioGuru.addEventListener('change', function () {
+            if (this.checked) {
+            restore(containerGuru, preserved.B);
+            setGroupVisible(containerGuru, true);
+            }else{
+            preserve(containerGuru, preserved.B);
+            setGroupVisible(containerGuru, false);
+            }
+        });
+        radioTeman.addEventListener('change', function () {
+            if (this.checked) {
+            restore(containerTeman, preserved.B);
+            setGroupVisible(containerTeman, true);
+            }else{
+            preserve(containerTeman, preserved.B);
+            setGroupVisible(containerTeman, false);
+            }
+        });
+        radioLainnya.addEventListener('change', function () {
+            if (this.checked) {
+            restore(containerLainnya, preserved.B);
+            setGroupVisible(containerLainnya, true);
+            }else{
+            preserve(containerLainnya, preserved.B);
+            setGroupVisible(containerLainnya, false);
+            }
+        });
+    });
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const tbody = document.getElementById('tableBody');
+  const tpl = document.getElementById('rowTemplate').content;
+  // Re-index rows so names become data[achievement][0][type], data[achievement][1][...], ...
+  function reindex() {
+    const rows = Array.from(tbody.querySelectorAll('tr.data-row'));
+    rows.forEach((tr, i) => {
+      // visible index
+      const idxCell = tr.querySelector('.row-index');
+      if (idxCell) idxCell.textContent = i + 1;
+      // set input names using data-field attributes or detect existing names
+      Array.from(tr.querySelectorAll('input, textarea, select')).forEach(el => {
+        const field = el.dataset.field || ((el.name || '').match(/\[([^\]]+)\]$/) ? (el.name.match(/\[([^\]]+)\]$/)[1]) : null);
+        if (field) el.name = `data[achievement][${i}][${field}]`;
+        // remove IDs duplicated from template
+        if (el.id) el.removeAttribute('id');
+      });
+    });
+  }
+
+  // add a new empty row
+  function addRow(values = {}) {
+    const frag = document.importNode(tpl, true);
+    const tr = frag.querySelector('tr');
+    // populate if values provided
+    Array.from(tr.querySelectorAll('[data-field]')).forEach(el => {
+      const f = el.dataset.field;
+      if (values[f] !== undefined) {
+        if (el.tagName.toLowerCase() === 'textarea') el.textContent = values[f];
+        else el.value = values[f];
+      }
+    });
+    tbody.appendChild(tr);
+    reindex();
+  }
+
+  // remove handler (works for dynamically added rows)
+  tbody.addEventListener('click', function (e) {
+    if (e.target.matches('.remove-row')) {
+      const tr = e.target.closest('tr.data-row');
+      if (!tr) return;
+      tr.remove();
+      // ensure at least one row exists if desired; otherwise reindex will create empty names array
+      if (tbody.querySelectorAll('tr.data-row').length === 0) addRow();
+      reindex();
+    }
+  });
+
+  // If you have a separate Add button, wire it up:
+  const addBtn = document.getElementById('addRow'); // adjust selector if different
+  if (addBtn) addBtn.addEventListener('click', () => addRow());
+
+  // initial reindex (for old() rows)
+  reindex();
+});
+</script>
+
+<script>
+    document.getElementById('inputPBAyah').addEventListener('input', function (e) {
+  let value = e.target.value.replace(/[^0-9]/g, '');
+  e.target.value = new Intl.NumberFormat('id-ID').format(value);
+});
+document.getElementById('inputPBIbu').addEventListener('input', function (e) {
+  let value = e.target.value.replace(/[^0-9]/g, '');
+  e.target.value = new Intl.NumberFormat('id-ID').format(value);
+});
+document.getElementById('inputPBWali').addEventListener('input', function (e) {
+  let value = e.target.value.replace(/[^0-9]/g, '');
+  e.target.value = new Intl.NumberFormat('id-ID').format(value);
+});
 </script>
 @endsection

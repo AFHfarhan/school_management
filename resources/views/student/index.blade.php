@@ -51,7 +51,7 @@
                                 <td>{{ $student->data['form_reg'] ?? 'N/A' }}</td>
                                 <td>{{ $student->data['personal']['birthdate'] ?? 'N/A' }}</td>
                                 <td>
-                                    <a href="{{ route('v1.students.edit', $student->id) }}" class="btn btn-primary btn-sm">Edit</a>
+                                    <a href="{{ route('v1.students.edit', $student) }}" class="btn btn-primary btn-sm">Edit</a>
                                     <form action="{{ route('v1.students.destroy', $student->id) }}" method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
