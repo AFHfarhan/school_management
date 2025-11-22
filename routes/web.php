@@ -38,10 +38,8 @@ Route::prefix('v1')->name('v1.')->group(function () {
 
 });
 
-
-
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('v1.login');
 });
 
 Route::get('/dashboard', function () {

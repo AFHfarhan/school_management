@@ -147,12 +147,28 @@
     <script src="{{ asset('/global_assets/vendor/chart.js/Chart.min.js') }}"></script>
     <script src="{{ asset('/global_assets/vendor/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('/global_assets/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
+    
+
+    <!-- before </body> -->
+    <script src="{{ asset('/global_assets/vendor/flatpickr/flatpickr.min.js') }}"></script>
 
     <!-- Page level custom scripts -->
     <script src="{{ asset('/global_assets/js/demo/chart-area-demo.js') }}"></script>
     <script src="{{ asset('/global_assets/js/demo/chart-pie-demo.js') }}"></script>
     <script src="{{ asset('/global_assets/js/demo/datatables-demo.js') }}"></script>
     <script src="{{ asset('/global_assets/js/main.js') }}"></script>
+
+    <!-- Add at the bottom of your dashboard.blade.php -->
+<script>
+    setInterval(function() {
+        fetch("{{ route('v1.dashboard')}}", {method: 'GET', credentials: 'same-origin'})
+            .then(response => {
+                if (response.status === 401) {
+                    window.location.href = "{{ route('v1.login') }}";
+                }
+            });
+    }, 120 * 60 * 1000); // check every 2 minutes
+</script>
 </body>
 
 </html>

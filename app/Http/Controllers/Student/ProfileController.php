@@ -12,6 +12,8 @@ use App\Models\Student;
 
 class ProfileController extends Controller
 {
+    protected $logger;
+
     public function index()
     {
         return view('student.index', [
@@ -22,6 +24,17 @@ class ProfileController extends Controller
     public function create()
     {
         return view('student.create');
+    }
+
+    /**
+     * Display the specified student's full details (read-only).
+     */
+    public function show(Student $student): View
+    {
+        $this->authorize('view', $student);
+
+        $data = $student->data ?? [];
+        return view('student.show', compact('student', 'data'));
     }
 
     public function store(Request $request){
@@ -40,10 +53,8 @@ class ProfileController extends Controller
         // }
 
         //merge separated date fields into one
-        $data['form_date'] = $validatedData['formgruptanggal'] . '/' . $validatedData['formgrupbulan'] . '/' . $validatedData['formgruptahun'];
         $data['form_reg'] = $validatedData['formgrupReg1'] . '/' . $validatedData['formgrupReg2'] . '/' . $validatedData['formgrupReg3'];
-        $data['personal']['birthdate'] = $validatedData['formgrupTTLTanggal'] . '/' . $validatedData['formgrupTTLBulan'] . '/' . $validatedData['formgrupTTLTahun'];
-
+        
         // dd($data);
 
         // Save the student with JSON data
@@ -51,6 +62,11 @@ class ProfileController extends Controller
             'name' => $validatedData['name'],
             'data' => $data,
         ]);
+
+    // $this->logger->info('student.created', ['ip' => $request->ip(), 
+    // 'user_id' => Auth::guard('teacher')->id(),
+    //  'message' => 'New student created: ' . $validatedData['name'], 
+    //  'context' => $data]);
     
         return redirect()->route('v1.students.index')->with('success', 'Student added successfully.');
     }
@@ -59,7 +75,10 @@ class ProfileController extends Controller
      */
     public function edit(Student $student)
     {
-        return view('student.edit', compact('student'));
+        $this->authorize('update', $student);
+
+        $data = $student->data ?? [];
+        return view('student.edit', compact('student','data'));
     }
 
     /**
@@ -68,6 +87,8 @@ class ProfileController extends Controller
     public function update(Request $request, Student $student): RedirectResponse
     {
         // Validate the request
+        $this->authorize('update', $student);
+
         $validatedData = $this->validateRequest($request);
 
         // Process subjects as an array
@@ -77,11 +98,10 @@ class ProfileController extends Controller
         // }
 
         //merge separated date fields into one
-        $data['form_date'] = $validatedData['formgruptanggal'] . '/' . $validatedData['formgrupbulan'] . '/' . $validatedData['formgruptahun'];
         $data['form_reg'] = $validatedData['formgrupReg1'] . '/' . $validatedData['formgrupReg2'] . '/' . $validatedData['formgrupReg3'];
-        $data['personal']['birthdate'] = $validatedData['formgrupTTLTanggal'] . '/' . $validatedData['formgrupTTLBulan'] . '/' . $validatedData['formgrupTTLTahun'];
 
-        dd($request,$data);
+        // dd($request,$data);
+
 
 
         // Update the student record
@@ -98,6 +118,8 @@ class ProfileController extends Controller
      */
     public function destroy(Student $student): RedirectResponse
     {
+        $this->authorize('delete', $student);
+
         $student->delete(); // Soft delete
         return redirect()->route('v1.students.index')->with('success', 'Student deleted successfully.');
     }
@@ -110,19 +132,15 @@ class ProfileController extends Controller
         // dd($request->all());
 
         return $request->validate([
-            'name' => 'required|string|max:255',
-            'formgruptanggal' => 'required|string',
-            'formgrupbulan' => 'required|string',
-            'formgruptahun' => 'required|string',
             'formgrupReg1' => 'required|string',
             'formgrupReg2' => 'required|string',
             'formgrupReg3' => 'required|string',
-            'formgrupTTLTanggal' => 'required|string',
-            'formgrupTTLBulan' => 'required|string',
-            'formgrupTTLTahun' => 'required|string',
+            'name' => 'required|string|max:255',
+            'data.form_date' => 'required|string',
             'data.grade' => 'required|string',
             'data.program' => 'required|string',
             'data.personal.birthplace' => 'required|string',
+            'data.personal.birthdate' => 'required|string',
             'data.personal.gender' => 'required|string',
             'data.personal.religion' => 'required|string',
             'data.personal.address' => 'required|string',
@@ -151,13 +169,18 @@ class ProfileController extends Controller
             'data.parent.sub.education' => 'nullable|string',
             'data.parent.sub.job' => 'nullable|string',
             'data.parent.sub.salary' => 'nullable|string',
-            'data.achievement.type' => 'nullable|string',
-            'data.achievement.grade' => 'nullable|string',
-            'data.achievement.name' => 'nullable|string',
-            'data.achievement.year' => 'nullable|string',
-            'data.achievement.credit' => 'nullable|string',
+            'data.parent.is_sub_active' => 'nullable|string',
+            'data.achievement' => 'nullable|array',
+            'data.achievement.*.type' => 'nullable|string',
+            'data.achievement.*.grade' => 'nullable|string',
+            'data.achievement.*.name' => 'nullable|string',
+            'data.achievement.*.year' => 'nullable|string',
+            'data.achievement.*.credit' => 'nullable|string',
             'data.other.requirements' => 'nullable|array',
             'data.other.reference' => 'nullable|array',
+            'data.other.reference_guru' => 'nullable|string',
+            'data.other.reference_teman' => 'nullable|string',
+            'data.other.reference_lainnya' => 'nullable|string',
         ]);
     }
 }

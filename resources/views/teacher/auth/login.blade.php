@@ -35,11 +35,10 @@
                             <div class="form-group">
                                 <div class="custom-control custom-checkbox small">
                                     <input type="checkbox" class="custom-control-input" id="rememberMeLogin" name="rememberMeLogin">
-                                    <label class="custom-control-label" for="customCheck">Remember
-                                        Me</label>
+                                    <label class="custom-control-label" for="rememberMeLogin">Remember Me</label>
                                 </div>
                             </div>
-                            <button type="submit" href="index.html" class="btn btn-primary btn-user btn-block">
+                            <button type="submit" href="" class="btn btn-primary btn-user btn-block">
                                 Login
                             </button>
                             

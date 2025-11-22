@@ -8,6 +8,10 @@
 
     <title>@yield('page_title')</title>
 
+    <!-- Favicon -->
+        <link rel="icon" type="image/x-icon" href="{{ asset('global_assets/img/logo_sman_sukamakmur.ico') }}">
+
+
     <!-- Custom fonts for this template-->
     <link href="{{ asset('/global_assets/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     <link
@@ -16,5 +20,6 @@
 
     <!-- Custom styles for this template-->
     <link href="{{ asset('/global_assets/css/sb-admin-2.min.css') }}" rel="stylesheet">
-
+    <!-- head of resources/views/layouts/app.blade.php -->
+    <link rel="stylesheet" href="{{ asset('/global_assets/vendor/flatpickr/flatpickr.min.css') }}">
 </head>

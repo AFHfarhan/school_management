@@ -2,7 +2,7 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/home">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('v1.dashboard')}}">
         <!-- <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
         </div> -->
@@ -14,7 +14,7 @@
 
     <!-- Nav Item - Dashboard -->
     <li class="nav-item active">
-        <a class="nav-link" href="/home">
+        <a class="nav-link" href="{{ route('v1.dashboard')}}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span></a>
     </li>
@@ -75,6 +75,16 @@
             </div>
         </div>
     </li>
+    @php
+        $teacher = Auth::guard('teacher')->user();
+        $role = null;
+        if ($teacher && !empty($teacher->data)) {
+            $tdata = json_decode($teacher->data, true);
+            $role = $tdata['role'] ?? null;
+        }
+    @endphp
+
+    @if($role === 'admin')
 
     <!-- Divider -->
     <hr class="sidebar-divider">
@@ -83,7 +93,7 @@
     <div class="sidebar-heading">
         Menu Super Admin
     </div>
-
+    
     <!-- Nav Item - Pages Collapse Menu -->
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
@@ -93,11 +103,12 @@
         </a>
         <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="login.html">Kelola Pengguna</a>
+                <a class="collapse-item" href="login.html">Kelola Admin</a>
                 <a class="collapse-item" href="register.html">Kelola Data Sekolah</a>
             </div>
         </div>
     </li>
+    @endif
 
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">
