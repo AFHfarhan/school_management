@@ -75,6 +75,16 @@
             </div>
         </div>
     </li>
+    @php
+        $teacher = Auth::guard('teacher')->user();
+        $role = null;
+        if ($teacher && !empty($teacher->data)) {
+            $tdata = json_decode($teacher->data, true);
+            $role = $tdata['role'] ?? null;
+        }
+    @endphp
+
+    @if($role === 'admin')
 
     <!-- Divider -->
     <hr class="sidebar-divider">
@@ -83,7 +93,7 @@
     <div class="sidebar-heading">
         Menu Super Admin
     </div>
-
+    
     <!-- Nav Item - Pages Collapse Menu -->
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
@@ -98,6 +108,7 @@
             </div>
         </div>
     </li>
+    @endif
 
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">

@@ -26,6 +26,17 @@ class ProfileController extends Controller
         return view('student.create');
     }
 
+    /**
+     * Display the specified student's full details (read-only).
+     */
+    public function show(Student $student): View
+    {
+        $this->authorize('view', $student);
+
+        $data = $student->data ?? [];
+        return view('student.show', compact('student', 'data'));
+    }
+
     public function store(Request $request){
         // Validate the request
         // dd($request->all());
@@ -64,6 +75,8 @@ class ProfileController extends Controller
      */
     public function edit(Student $student)
     {
+        $this->authorize('update', $student);
+
         $data = $student->data ?? [];
         return view('student.edit', compact('student','data'));
     }
@@ -74,6 +87,8 @@ class ProfileController extends Controller
     public function update(Request $request, Student $student): RedirectResponse
     {
         // Validate the request
+        $this->authorize('update', $student);
+
         $validatedData = $this->validateRequest($request);
 
         // Process subjects as an array
@@ -83,9 +98,7 @@ class ProfileController extends Controller
         // }
 
         //merge separated date fields into one
-        $data['form_date'] = $validatedData['formgruptanggal'] . '/' . $validatedData['formgrupbulan'] . '/' . $validatedData['formgruptahun'];
         $data['form_reg'] = $validatedData['formgrupReg1'] . '/' . $validatedData['formgrupReg2'] . '/' . $validatedData['formgrupReg3'];
-        $data['personal']['birthdate'] = $validatedData['formgrupTTLTanggal'] . '/' . $validatedData['formgrupTTLBulan'] . '/' . $validatedData['formgrupTTLTahun'];
 
         // dd($request,$data);
 
@@ -105,6 +118,8 @@ class ProfileController extends Controller
      */
     public function destroy(Student $student): RedirectResponse
     {
+        $this->authorize('delete', $student);
+
         $student->delete(); // Soft delete
         return redirect()->route('v1.students.index')->with('success', 'Student deleted successfully.');
     }
@@ -121,11 +136,11 @@ class ProfileController extends Controller
             'formgrupReg2' => 'required|string',
             'formgrupReg3' => 'required|string',
             'name' => 'required|string|max:255',
-            'data.register_date' => 'required|string',
-            'data.birth_date' => 'required|string',
+            'data.form_date' => 'required|string',
             'data.grade' => 'required|string',
             'data.program' => 'required|string',
             'data.personal.birthplace' => 'required|string',
+            'data.personal.birthdate' => 'required|string',
             'data.personal.gender' => 'required|string',
             'data.personal.religion' => 'required|string',
             'data.personal.address' => 'required|string',

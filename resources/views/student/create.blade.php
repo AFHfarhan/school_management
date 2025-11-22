@@ -19,7 +19,7 @@
                     <div class="col-lg-6">
                         <label for="inputTanggal" class="form-label">Tanggal</label>
                         <div class="input-group" id="inputTanggal">
-                            <input type="text" class="form-control" placeholder="Pilih Tanggal" name="data[register_date]" id="registerdate" value="{{ old('data[register_date]') }}" aria-label="Tanggal">
+                            <input type="text" class="form-control" placeholder="Pilih Tanggal" name="data[form_date]" id="registerdate" value="{{ old('data[form_date]') }}" aria-label="Tanggal">
                         </div>
                         <div class="row" style="margin-top:20px;">
                             <div class="col-lg-6">
@@ -66,7 +66,7 @@
                                     <input type="text" class="form-control" name="data[personal][birthplace]" value="{{ old('data[personal][birthplace]') }}" id="formgrupTTLTempat" >
                                 </div>
                                 <div class="input-group col-md-8">
-                                    <input type="text" class="form-control" placeholder="Pilih Tanggal" name="data[personal][birth_date]" id="birthdate" value="{{ old('data[personal][birth_date]') }}" aria-label="Tanggal Lahir">
+                                    <input type="text" class="form-control" placeholder="Pilih Tanggal" name="data[personal][birthdate]" id="birthdate" value="{{ old('data[personal][birthdate]') }}" aria-label="Tanggal Lahir">
                                 </div>
                             </div>
                         </div>
