@@ -20,12 +20,14 @@ Route::prefix('v1')->name('v1.')->group(function () {
     Route::middleware('auth:teacher')->group(function () {
         Route::get('/dashboard', function () {
             $teacher = Auth::guard('teacher')->user();
-            $data = json_decode($teacher->data, true); // Decode JSON data
+            $data = is_array($teacher->data) ? $teacher->data : json_decode($teacher->data, true);
             $role = $data['role'] ?? 'No role assigned'; // Access role from JSON data
             return view('teacher.dashboard', ['role' => $role]);
         })->name('dashboard');
 
         Route::post('add', [StudentController::class, 'store'])->name('student.add');
+        Route::post('teachers', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherManagementController::class, 'store'])->name('teacher.store');
+        Route::get('teachers/manage', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherManagementController::class, 'index'])->name('teacher.manage');
 
         Route::resource('students', StudentController::class);
         Route::resource('teacherdata', TeacherProfileController::class);
@@ -37,6 +39,12 @@ Route::prefix('v1')->name('v1.')->group(function () {
     });
 
 });
+
+// Provide a global named logout route so views that call route('logout') resolve.
+// This route uses the teacher guard logout controller and requires auth:teacher.
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->middleware('auth:teacher')
+    ->name('logout');
 
 Route::get('/', function () {
     return redirect()->route('v1.login');

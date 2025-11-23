@@ -38,7 +38,7 @@
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('v1.students.create')}}">Pendaftaran Siswa Baru</a>
-                <a class="collapse-item" href="{{ route('v1.students.index')}}">Daftar Siswa</a>
+                <a class="collapse-item" href="{{ route('v1.students.index')}}">Daftar Siswa Baru</a>
             </div>
         </div>
     </li>
@@ -78,8 +78,9 @@
     @php
         $teacher = Auth::guard('teacher')->user();
         $role = null;
-        if ($teacher && !empty($teacher->data)) {
-            $tdata = json_decode($teacher->data, true);
+        if ($teacher && isset($teacher->data) && $teacher->data !== null) {
+            // `data` may already be cast to an array by the model. Handle both cases.
+            $tdata = is_array($teacher->data) ? $teacher->data : json_decode($teacher->data, true);
             $role = $tdata['role'] ?? null;
         }
     @endphp
@@ -93,7 +94,7 @@
     <div class="sidebar-heading">
         Menu Super Admin
     </div>
-    
+
     <!-- Nav Item - Pages Collapse Menu -->
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
@@ -103,7 +104,7 @@
         </a>
         <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="login.html">Kelola Admin</a>
+                <a class="collapse-item" href="{{ route('v1.teacher.manage') }}">Kelola Akun</a>
                 <a class="collapse-item" href="register.html">Kelola Data Sekolah</a>
             </div>
         </div>
