@@ -1,5 +1,5 @@
 @extends('themes.master')
-@section('page_title', 'Kelola Teacher (Super Admin)')
+@section('page_title', 'Kelola Akun (Super Admin)')
 
 @section('content')
 <div class="container-fluid">

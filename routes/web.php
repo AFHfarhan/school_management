@@ -25,9 +25,33 @@ Route::prefix('v1')->name('v1.')->group(function () {
             return view('teacher.dashboard', ['role' => $role]);
         })->name('dashboard');
 
+        // Transactions page handled by controller
+        Route::get('transactions', [\App\Http\Controllers\Transaction\TransactionController::class, 'index'])
+            ->name('transaction.index');
+
+        // Show create form (optionally with ?type=... to preselect)
+        Route::get('transactions/create', [\App\Http\Controllers\Transaction\TransactionController::class, 'create'])
+            ->name('transaction.create');
+
+        // Store transaction (create)
+        Route::post('transactions', [\App\Http\Controllers\Transaction\TransactionController::class, 'store'])
+            ->name('transaction.store');
+
         Route::post('add', [StudentController::class, 'store'])->name('student.add');
         Route::post('teachers', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherManagementController::class, 'store'])->name('teacher.store');
         Route::get('teachers/manage', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherManagementController::class, 'index'])->name('teacher.manage');
+
+        // Component management (superadmin)
+        Route::get('components/manage', [\App\Http\Controllers\Teacher\SuperAdmin\ComponentController::class, 'index'])
+            ->name('component.manage');
+        Route::post('components', [\App\Http\Controllers\Teacher\SuperAdmin\ComponentController::class, 'store'])
+            ->name('component.store');
+        Route::get('components/{component}/edit', [\App\Http\Controllers\Teacher\SuperAdmin\ComponentController::class, 'edit'])
+            ->name('component.edit');
+        Route::put('components/{component}', [\App\Http\Controllers\Teacher\SuperAdmin\ComponentController::class, 'update'])
+            ->name('component.update');
+        Route::delete('components/{component}', [\App\Http\Controllers\Teacher\SuperAdmin\ComponentController::class, 'destroy'])
+            ->name('component.destroy');
 
         Route::resource('students', StudentController::class);
         Route::resource('teacherdata', TeacherProfileController::class);

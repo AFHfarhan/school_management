@@ -53,8 +53,8 @@
         <div id="collapsePayment" class="collapse" aria-labelledby="headingPayment"
             data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="/buat_pembayaran_baru">Pembayaran Baru</a>
-                <a class="collapse-item" href="/daftar_pembayaran_pembiayaan">Daftar Pembayaran</a>
+                <a class="collapse-item" href="/buat_pembayaran_baru">Buat Pembayaran PPDB</a>
+                <a class="collapse-item" href="{{ route('v1.transaction.index') }}">Daftar Pembayaran</a>
             </div>
         </div>
     </li>
@@ -105,7 +105,7 @@
         <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('v1.teacher.manage') }}">Kelola Akun</a>
-                <a class="collapse-item" href="register.html">Kelola Data Sekolah</a>
+                <a class="collapse-item" href="{{ route('v1.component.manage') }}">Kelola Data Sekolah</a>
             </div>
         </div>
     </li>
