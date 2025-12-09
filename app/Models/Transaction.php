@@ -25,4 +25,20 @@ class Transaction extends Model
     ];
 
     public $timestamps = true;
+
+    /**
+     * Get the teacher who created this transaction.
+     */
+    public function creator()
+    {
+        return $this->belongsTo(Teacher::class, 'created_by');
+    }
+
+    /**
+     * Get the teacher who last updated this transaction.
+     */
+    public function updater()
+    {
+        return $this->belongsTo(Teacher::class, 'updated_by');
+    }
 }

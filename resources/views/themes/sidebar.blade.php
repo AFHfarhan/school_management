@@ -53,7 +53,7 @@
         <div id="collapsePayment" class="collapse" aria-labelledby="headingPayment"
             data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="/buat_pembayaran_baru">Buat Pembayaran PPDB</a>
+                <a class="collapse-item" href="{{ route('v1.transaction.create', ['type' => 'ppdb']) }}">Buat Pembayaran PPDB</a>
                 <a class="collapse-item" href="{{ route('v1.transaction.index') }}">Daftar Pembayaran</a>
             </div>
         </div>

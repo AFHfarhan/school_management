@@ -37,6 +37,18 @@ Route::prefix('v1')->name('v1.')->group(function () {
         Route::post('transactions', [\App\Http\Controllers\Transaction\TransactionController::class, 'store'])
             ->name('transaction.store');
 
+        // Show transaction detail
+        Route::get('transactions/{transaction}', [\App\Http\Controllers\Transaction\TransactionController::class, 'show'])
+            ->name('transaction.show');
+
+        // Edit transaction form
+        Route::get('transactions/{transaction}/edit', [\App\Http\Controllers\Transaction\TransactionController::class, 'edit'])
+            ->name('transaction.edit');
+
+        // Update transaction
+        Route::put('transactions/{transaction}', [\App\Http\Controllers\Transaction\TransactionController::class, 'update'])
+            ->name('transaction.update');
+
         Route::post('add', [StudentController::class, 'store'])->name('student.add');
         Route::post('teachers', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherManagementController::class, 'store'])->name('teacher.store');
         Route::get('teachers/manage', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherManagementController::class, 'index'])->name('teacher.manage');
@@ -52,6 +64,18 @@ Route::prefix('v1')->name('v1.')->group(function () {
             ->name('component.update');
         Route::delete('components/{component}', [\App\Http\Controllers\Teacher\SuperAdmin\ComponentController::class, 'destroy'])
             ->name('component.destroy');
+
+        // Teacher management (superadmin)
+        Route::get('teachers/edit/{teacher}', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherManagementController::class, 'edit'])
+            ->name('teacher.edit');
+        Route::put('teachers/{teacher}', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherManagementController::class, 'update'])
+            ->name('teacher.update');
+        Route::patch('teachers/{teacher}/deactivate', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherManagementController::class, 'deactivate'])
+            ->name('teacher.deactivate');
+        Route::patch('teachers/{teacher}/reactivate', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherManagementController::class, 'reactivate'])
+            ->name('teacher.reactivate');
+        Route::patch('teachers/{teacher}/delete', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherManagementController::class, 'delete'])
+            ->name('teacher.delete');
 
         Route::resource('students', StudentController::class);
         Route::resource('teacherdata', TeacherProfileController::class);

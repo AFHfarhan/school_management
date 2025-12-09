@@ -16,7 +16,7 @@
                     <h6 class="m-0 font-weight-bold text-primary">Buat Pembayaran Baru</h6>
                 </div>
                 <div class="card-body">
-                    <form method="get" action="{{ route('v1.transaction.create') }}">
+                    <form method="get" action="{{ route('v1.transaction.create') }}" id="createTransactionForm">
                         <div class="form-row align-items-end">
                             <div class="col-md-6 mb-3">
                                 <label for="transaction_type">Transaction Type</label>
@@ -25,7 +25,7 @@
                                         $types = $types ?? ['ppdb' => 'PPDB', 'spp' => 'SPP',  'other' => 'Other'];
                                     @endphp
                                     @foreach($types as $key => $label)
-                                        <option value="{{ $key }}">{{ $label }}</option>
+                                        <option value="{{ $key }}" data-title="{{ $types[$key] ?? '' }}">{{ $label }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -51,28 +51,40 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Transaction Name</th>
-                                    <th>Type</th>
+                                    <th>Category</th>
                                     <th>Status</th>
                                     <th>Created Date</th>
                                     <th>Payment Date</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($transactions ?? [] as $i => $t)
                                     @php
                                         $name = data_get($t, 'name', $t->name ?? '');
-                                        $type = data_get($t, 'type', $t->type ?? '');
-                                        $status = data_get($t, 'status', $t->status ?? '');
-                                        $created = data_get($t, 'created_at', $t->created_at ?? data_get($t, 'created_date', ''));
-                                        $payment = data_get($t, 'payment_date', $t->payment_date ?? '');
+                                        $category = data_get($t, 'category', $t->category ?? '');
+                                        $data = is_array($t->data) ? $t->data : json_decode($t->data, true);
+                                        $status = $data['status'] ?? 'pending';
+                                        $created = $t->created_at ? $t->created_at->format('d/m/Y H:i:s') : '';
+                                        $payment = $data['payment_date'] ?? '';
+                                        $badgeClass = $status === 'paid' ? 'success' : ($status === 'failed' ? 'danger' : 'warning');
                                     @endphp
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $name }}</td>
-                                        <td>{{ ucfirst($type) }}</td>
-                                        <td>{{ ucfirst($status) }}</td>
+                                        <td>{{ ucfirst($category) }}</td>
+                                        <td>
+                                            <span class="badge badge-{{ $badgeClass }}">{{ ucfirst($status) }}</span>
+                                        </td>
                                         <td>{{ $created }}</td>
                                         <td>{{ $payment }}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a href="{{ route('v1.transaction.show', $t->id) }}" class="btn btn-info" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </div>
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -95,6 +107,16 @@
         if (typeof flatpickr !== 'undefined') {
             flatpickr('.flatpickr', { dateFormat: 'Y-m-d' });
         }
+        
+        // Update hidden title field when type changes
+        $('#transaction_type').on('change', function() {
+            var selectedOption = $(this).find('option:selected');
+            var title = selectedOption.data('title') || '';
+            $('#transaction_title').val(title);
+        });
+        
+        // Set initial value
+        $('#transaction_type').trigger('change');
     });
 </script>
 @endsection

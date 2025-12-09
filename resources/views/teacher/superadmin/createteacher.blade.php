@@ -53,27 +53,68 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered" width="100%">
-                            <thead>
+                        <table class="table table-bordered table-hover" id="teachersTable" width="100%">
+                            <thead class="bg-light">
                                 <tr>
                                     <th>Nama</th>
                                     <th>Email</th>
                                     <th>Role</th>
-                                    <th>Active</th>
+                                    <th>Status</th>
                                     <th>Terakhir Login</th>
+                                    <th width="25%">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($teachers as $t)
-                                    @php $td = $t->data ?? []; @endphp
+                                @forelse($teachers as $t)
+                                    @php 
+                                        $td = is_array($t->data) ? $t->data : json_decode($t->data, true) ?? [];
+                                        $isActive = $td['isActive'] ?? 1;
+                                        $statusBadge = $isActive == 1 ? 'badge-success' : ($isActive == 2 ? 'badge-warning' : 'badge-danger');
+                                        $statusText = $isActive == 1 ? 'Aktif' : ($isActive == 2 ? 'Tidak Aktif' : 'Dihapus');
+                                    @endphp
                                     <tr>
-                                        <td>{{ $t->name }}</td>
+                                        <td><strong>{{ $t->name }}</strong></td>
                                         <td>{{ $t->email }}</td>
-                                        <td>{{ $td['role'] ?? '-' }}</td>
-                                        <td>{{ isset($td['isActive']) && $td['isActive'] ? 'Ya' : 'Tidak' }}</td>
-                                        <td>{{ $td['latest_login'] ?? '-' }}</td>
+                                        <td><span class="badge badge-info">{{ $td['role'] ?? '-' }}</span></td>
+                                        <td><span class="badge {{ $statusBadge }}">{{ $statusText }}</span></td>
+                                        <td><small>{{ $td['latest_login'] ?? '-' }}</small></td>
+                                        <td class="text-center">
+                                            <a href="{{ route('v1.teacher.edit', $t->id) }}" class="btn btn-sm btn-info" title="Edit">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            @if($isActive == 1)
+                                                <form method="POST" action="{{ route('v1.teacher.deactivate', $t->id) }}" style="display:inline;">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="btn btn-sm btn-warning" title="Deactivate" onclick="return confirm('Deactivate this teacher?')">
+                                                        <i class="fas fa-ban"></i> Nonactive
+                                                    </button>
+                                                </form>
+                                            @elseif($isActive == 2)
+                                                <form method="POST" action="{{ route('v1.teacher.reactivate', $t->id) }}" style="display:inline;">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="btn btn-sm btn-success" title="Reactivate" onclick="return confirm('Reactivate this teacher?')">
+                                                        <i class="fas fa-check"></i> Reactivate
+                                                    </button>
+                                                </form>
+                                            @endif
+                                            <form method="POST" action="{{ route('v1.teacher.delete', $t->id) }}" style="display:inline;">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Delete this teacher?')">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">
+                                            <i class="fas fa-inbox"></i> Tidak ada data guru
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -82,4 +123,17 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function(){
+    $('#teachersTable').DataTable({
+        "order": [[0, "asc"]],
+        "language": {
+            "emptyTable": "Tidak ada data guru"
+        }
+    });
+});
+</script>
 @endsection

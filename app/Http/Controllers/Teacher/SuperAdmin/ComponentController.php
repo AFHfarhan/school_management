@@ -100,7 +100,28 @@ class ComponentController extends Controller
 
     public function edit(Component $component)
     {
-        return view('teacher.superadmin.editcomponent', compact('component'));
+        return view('teacher.superadmin.editsuperadmin', compact('component'));
+    }
+
+    /**
+     * Helper to convert data array back to string format for display in textarea
+     */
+    protected function dataToString($data): string
+    {
+        if (empty($data)) {
+            return '';
+        }
+
+        if (is_array($data)) {
+            // Check if it's a sequential array (list)
+            if (array_keys($data) === range(0, count($data) - 1)) {
+                return implode(',', $data);
+            }
+            // Associative array - return as JSON
+            return json_encode($data);
+        }
+
+        return (string) $data;
     }
 
     public function update(Request $request, Component $component)
