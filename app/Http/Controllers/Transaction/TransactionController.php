@@ -44,15 +44,12 @@ class TransactionController extends Controller
         $rules = [
             'title' => 'required|string|max:255',
             'category' => 'required|string|max:100',
-            'data.payment_date' => 'required|string|max:255',
             'data.amount' => 'required|string|max:255',
             'data.amount_terbilang' => 'nullable|string|max:255',
             'data.payer' => 'required|string|max:255',
             'data.recipient' => 'required|string|max:255',
             'data.notes' => 'nullable|string',
         ];
-
-        dd($request->all());
 
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -61,6 +58,7 @@ class TransactionController extends Controller
 
         $category = $request->input('category');
         $data = $request->input('data', []);
+        $name = $request->input('title');
         
         // Add status and payment_date to data array
         $data['status'] = 'pending';
@@ -83,7 +81,8 @@ class TransactionController extends Controller
      */
     public function show(Transaction $transaction)
     {
-        return view('transaction.show', compact('transaction'));
+        $bankInfo = $this->getBankInfo();
+        return view('transaction.show', compact('transaction', 'bankInfo'));
     }
 
     /**
@@ -96,19 +95,22 @@ class TransactionController extends Controller
     }
 
     /**
+     * Show the form for updating payment status.
+     */
+    public function updatePaymentForm(Transaction $transaction)
+    {
+        return view('transaction.update-payment', compact('transaction'));
+    }
+
+    /**
      * Update the specified transaction in storage.
      */
     public function update(Request $request, Transaction $transaction)
     {
         $rules = [
-            'name' => 'required|string|max:255',
-            'type' => 'required|string|max:100',
             'data.payment_date' => 'required|string',
-            'data.amount' => 'required|string|max:255',
-            'data.amount_terbilang' => 'nullable|string|max:255',
-            'data.payer' => 'required|string|max:255',
-            'data.recipient' => 'required|string|max:255',
-            'data.notes' => 'nullable|string',
+            'payment_evidence' => 'nullable|array',
+            'payment_evidence.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -116,19 +118,48 @@ class TransactionController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $data = $request->input('data', []);
+        $data = is_array($transaction->data) ? $transaction->data : json_decode($transaction->data, true);
         
-        // Add status and payment_date to data array
-        $data['status'] = $request->input('status', 'pending');
+        // Update payment date and status
+        $data['payment_date'] = $request->input('data.payment_date');
+        $data['status'] = 'paid';
+
+        // Handle multiple payment evidence uploads
+        $evidenceFiles = [];
+        if ($request->hasFile('payment_evidence')) {
+            foreach ($request->file('payment_evidence') as $file) {
+                $filename = 'payment_' . $transaction->id . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/payment_evidence'), $filename);
+                $evidenceFiles[] = $filename;
+            }
+        }
+
+        // Store additional payment information in additional_data column
+        $additionalData = is_array($transaction->additional_data) ? $transaction->additional_data : json_decode($transaction->additional_data, true);
+        if (!is_array($additionalData)) {
+            $additionalData = [];
+        }
+
+        if (!isset($additionalData['payments'])) {
+            $additionalData['payments'] = [];
+        }
+
+        // Add payment entry
+        $additionalData['payments'][] = [
+            'payment_date' => $data['payment_date'],
+            'status' => 'paid',
+            'evidence' => $evidenceFiles,
+            'uploaded_at' => now()->format('Y-m-d H:i:s'),
+            'uploaded_by' => Auth::guard('teacher')->user()->name ?? Auth::user()->name ?? 'System',
+        ];
 
         $transaction->update([
-            'name' => $request->input('name'),
-            'category' => $request->input('category'),
             'data' => $data,
+            'additional_data' => $additionalData,
             'updated_by' => Auth::guard('teacher')->id() ?? Auth::id() ?? null,
         ]);
 
-        return redirect()->route('v1.transaction.show', $transaction->id)->with('success', 'Transaction updated successfully');
+        return redirect()->route('v1.transaction.show', $transaction->id)->with('success', 'Payment status updated successfully');
     }
 
     /**
@@ -201,5 +232,37 @@ class TransactionController extends Controller
         }
         
         return null;
+    }
+
+    /**
+     * Get bank information from component table
+     */
+    private function getBankInfo()
+    {
+        $component = Component::where('name', 'bank number sekolah')->first();
+        
+        $bankInfo = [
+            'bank_name' => 'BCA (Bank Central Asia)',
+            'account_number' => '1234567890',
+            'account_name' => 'SMK SEKOLAH MANAGEMENT',
+        ];
+
+        if ($component && !empty($component->data)) {
+            $data = is_array($component->data) ? $component->data : json_decode($component->data, true);
+            
+            if (is_array($data)) {
+                if (isset($data['bank'])) {
+                    $bankInfo['bank_name'] = $data['bank'];
+                }
+                if (isset($data['rekening'])) {
+                    $bankInfo['account_number'] = $data['rekening'];
+                }
+                if (isset($data['account_name'])) {
+                    $bankInfo['account_name'] = $data['account_name'];
+                }
+            }
+        }
+
+        return $bankInfo;
     }
 }

@@ -10,8 +10,8 @@
             <a href="{{ route('v1.transaction.index') }}" class="btn btn-secondary">
                 <i class="fas fa-list"></i> Back to List
             </a>
-            <a href="{{ route('v1.transaction.edit', $transaction->id) }}" class="btn btn-warning">
-                <i class="fas fa-edit"></i> Edit
+            <a href="{{ route('v1.transaction.updatePayment', $transaction->id) }}" class="btn btn-success">
+                <i class="fas fa-money-bill"></i> Update Status Pembayaran
             </a>
             <button onclick="window.print()" class="btn btn-primary">
                 <i class="fas fa-print"></i> Print
@@ -58,16 +58,6 @@
                                         $badgeClass = $status === 'paid' ? 'success' : ($status === 'failed' ? 'danger' : 'warning');
                                     @endphp
                                     <span class="badge badge-{{ $badgeClass }}">{{ ucfirst($status) }}</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Payment Date</th>
-                                <td>
-                                    @php
-                                        $data = is_array($transaction->data) ? $transaction->data : json_decode($transaction->data, true);
-                                        $paymentDate = $data['payment_date'] ?? null;
-                                    @endphp
-                                    {{ $paymentDate ?? '-' }}
                                 </td>
                             </tr>
                             <tr>
@@ -123,6 +113,43 @@
                     <h6 class="font-weight-bold text-primary mt-4">Payments Information</h6>
                     <table class="table table-bordered">
                         <tbody>
+                            @if(isset($data['payment_date']))
+                                <tr>
+                                    <th width="30%">Payment Date</th>
+                                    <td>{{ $data['payment_date'] }}</td>
+                                </tr>
+                            @endif
+                            @php
+                                $additionalData = is_array($transaction->additional_data) ? $transaction->additional_data : json_decode($transaction->additional_data, true);
+                            @endphp
+                            @if(isset($additionalData['payments']) && is_array($additionalData['payments']) && count($additionalData['payments']) > 0)
+                                <tr>
+                                    <th>Payment Evidence</th>
+                                    <td>
+                                        @foreach($additionalData['payments'] as $payment)
+                                            <div class="mb-3">
+                                                <h6 class="font-weight-bold mb-2">Payment #{{ $loop->iteration }}</h6>
+                                                <p class="mb-1"><strong>Date:</strong> {{ $payment['payment_date'] ?? '-' }}</p>
+                                                <p class="mb-2"><strong>Uploaded by:</strong> {{ $payment['uploaded_by'] ?? '-' }} ({{ $payment['uploaded_at'] ?? '-' }})</p>
+                                                @if(isset($payment['evidence']) && is_array($payment['evidence']))
+                                                    <div class="row">
+                                                        @foreach($payment['evidence'] as $evidence)
+                                                            <div class="col-md-3 mb-2">
+                                                                <a href="{{ asset('uploads/payment_evidence/' . $evidence) }}" target="_blank">
+                                                                    <img src="{{ asset('uploads/payment_evidence/' . $evidence) }}" alt="Payment Evidence" style="width: 100%; max-height: 200px; object-fit: cover;" class="img-thumbnail">
+                                                                </a>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                                @if(!$loop->last)
+                                                    <hr>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </td>
+                                </tr>
+                            @endif
                             <tr>
                                 <th width="30%">Created By</th>
                                 <td>{{ $transaction->creator->name ?? 'System' }}</td>
@@ -141,6 +168,37 @@
                             @endif
                         </tbody>
                     </table>
+
+                    @if($status === 'pending')
+                        <div class="alert alert-info mt-4">
+                            <h6 class="font-weight-bold mb-3"><i class="fas fa-university"></i> Bank Account Information for Payment</h6>
+                            <table class="table table-sm table-borderless mb-0">
+                                <tbody>
+                                    <tr>
+                                        <td width="30%"><strong>Bank Name</strong></td>
+                                        <td>:</td>
+                                        <td>{{ $bankInfo['bank_name'] ?? 'BCA (Bank Central Asia)' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Account Number</strong></td>
+                                        <td>:</td>
+                                        <td><code>{{ $bankInfo['account_number'] ?? '1234567890' }}</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Account Name</strong></td>
+                                        <td>:</td>
+                                        <td>{{ $bankInfo['account_name'] ?? 'SMK SEKOLAH MANAGEMENT' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Amount</strong></td>
+                                        <td>:</td>
+                                        <td><span class="badge badge-primary">Rp {{ $data['amount'] ?? '-' }}</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p class="mt-3 mb-0 small text-muted">Please transfer the exact amount and upload the payment evidence to update the status to PAID.</p>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

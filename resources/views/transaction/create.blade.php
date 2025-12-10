@@ -18,13 +18,13 @@
                 <div class="card-body">
                     <form method="POST" action="{{ route('v1.transaction.store') }}">
                         @csrf
-                        <div class="form-group">
-                            <label for="name">Transaction Name</label>
-                            <input type="text" name="name" id="name" class="form-control" value="{{ old('title', $transactionTitle ?? '') }}" disabled>
-                            <input type="hidden" name="title" class="form-control" value="{{ old('title', $transactionTitle ?? '') }}">
-                        </div>
-
                         <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="name">Transaction Name</label>
+                                <input type="text" name="name" id="name" class="form-control" value="{{ old('title', request('title') ?? $transactionTitle ?? '') }}" disabled>
+                                <input type="hidden" name="title" class="form-control" value="{{ old('title', request('title') ?? $transactionTitle ?? '') }}">
+                            </div>
+
                             <div class="form-group col-md-6">
                                 <label for="category">Transaction Type</label>
                                 @php $selectedType = $preselectedType ?? old('category') ?? null; @endphp
@@ -41,10 +41,6 @@
                                 @else
                                     <input type="hidden" name="category" value="{{ old('category') }}">
                                 @endif
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="payment_date">Payment Date</label>
-                                <input type="text" name="data[payment_date]" id="paymentDate" class="form-control flatpickr" value="{{ old('data.payment_date', now()->format('d/m/Y')) }}" data-dateformat="d/m/Y">
                             </div>
                         </div>
 

@@ -49,6 +49,10 @@ Route::prefix('v1')->name('v1.')->group(function () {
         Route::put('transactions/{transaction}', [\App\Http\Controllers\Transaction\TransactionController::class, 'update'])
             ->name('transaction.update');
 
+        // Update payment status form
+        Route::get('transactions/{transaction}/update-payment', [\App\Http\Controllers\Transaction\TransactionController::class, 'updatePaymentForm'])
+            ->name('transaction.updatePayment');
+
         Route::post('add', [StudentController::class, 'store'])->name('student.add');
         Route::post('teachers', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherManagementController::class, 'store'])->name('teacher.store');
         Route::get('teachers/manage', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherManagementController::class, 'index'])->name('teacher.manage');

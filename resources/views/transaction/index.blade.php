@@ -18,7 +18,7 @@
                 <div class="card-body">
                     <form method="get" action="{{ route('v1.transaction.create') }}" id="createTransactionForm">
                         <div class="form-row align-items-end">
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label for="transaction_type">Transaction Type</label>
                                 <select name="type" id="transaction_type" class="form-control">
                                     @php
@@ -28,6 +28,10 @@
                                         <option value="{{ $key }}" data-title="{{ $types[$key] ?? '' }}">{{ $label }}</option>
                                     @endforeach
                                 </select>
+                            </div>
+                            <div class="col-md-4 mb-3" id="title_field_container" style="display: none;">
+                                <label for="transaction_title_input">Transaction Title</label>
+                                <input type="text" name="title" id="transaction_title_input" class="form-control" placeholder="Enter transaction title">
                             </div>
                             <div class="col-md-2 mb-3">
                                 <button type="submit" class="btn btn-primary btn-block">Create</button>
@@ -72,7 +76,7 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $name }}</td>
-                                        <td>{{ ucfirst($category) }}</td>
+                                        <td>{{ strtoupper($category) }}</td>
                                         <td>
                                             <span class="badge badge-{{ $badgeClass }}">{{ ucfirst($status) }}</span>
                                         </td>
@@ -82,6 +86,9 @@
                                             <div class="btn-group btn-group-sm" role="group">
                                                 <a href="{{ route('v1.transaction.show', $t->id) }}" class="btn btn-info" title="View">
                                                     <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('v1.transaction.updatePayment', $t->id) }}" class="btn btn-success" title="Update Payment">
+                                                    <i class="fas fa-money-bill"></i>
                                                 </a>
                                             </div>
                                         </td>
@@ -102,21 +109,33 @@
 @section('scripts')
 <script>
     $(document).ready(function(){
-        $('#transactionsTable').DataTable();
+        // Show/hide title field based on transaction type
+        $('#transaction_type').on('change', function() {
+            var selectedValue = $(this).val().toLowerCase();
+            console.log('Selected value:', selectedValue); // Debug log
+            if (selectedValue === 'other') {
+                $('#title_field_container').show();
+                $('#transaction_title_input').prop('required', true);
+            } else {
+                $('#title_field_container').hide();
+                $('#transaction_title_input').prop('required', false);
+                $('#transaction_title_input').val('');
+            }
+        });
+        
+        // Set initial value after binding event
+        $('#transaction_type').trigger('change');
+
+        // Initialize DataTable only if table exists
+        if ($('#transactionsTable').length) {
+            $('#transactionsTable').DataTable();
+        }
+        
         // init flatpickr for payment date
         if (typeof flatpickr !== 'undefined') {
             flatpickr('.flatpickr', { dateFormat: 'Y-m-d' });
         }
-        
-        // Update hidden title field when type changes
-        $('#transaction_type').on('change', function() {
-            var selectedOption = $(this).find('option:selected');
-            var title = selectedOption.data('title') || '';
-            $('#transaction_title').val(title);
-        });
-        
-        // Set initial value
-        $('#transaction_type').trigger('change');
     });
 </script>
 @endsection
+
