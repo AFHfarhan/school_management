@@ -10,12 +10,6 @@
             <a href="{{ route('v1.transaction.index') }}" class="btn btn-secondary">
                 <i class="fas fa-list"></i> Back to List
             </a>
-            <a href="{{ route('v1.transaction.updatePayment', $transaction->id) }}" class="btn btn-success">
-                <i class="fas fa-money-bill"></i> Update Status Pembayaran
-            </a>
-            <button onclick="window.print()" class="btn btn-primary">
-                <i class="fas fa-print"></i> Print
-            </button>
         </div>
     </div>
 
@@ -32,7 +26,23 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4" id="printable-area">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Transaction Information</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="m-0 font-weight-bold text-primary">Transaction Information</h6>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            @if($transaction->data['status'] === 'pending')
+                                <a href="{{ route('v1.transaction.updatePayment', $transaction->id) }}" class="btn btn-success">
+                                    <i class="fas fa-money-bill"></i> Update Payment
+                                </a>
+                                <button type="button" class="btn btn-danger" onclick="confirmCancelPayment({{ $transaction->id }})">
+                                    <i class="fas fa-times-circle"></i> Cancel Payment
+                                </button>
+                            @endif
+                            <button onclick="window.print()" class="btn btn-primary">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                        </div>
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered">
@@ -220,4 +230,20 @@
         }
     }
 </style>
+
+<!-- Hidden form for cancel payment -->
+<form id="cancelPaymentForm" method="POST" style="display: none;">
+    @csrf
+    @method('POST')
+</form>
+
+<script>
+    function confirmCancelPayment(transactionId) {
+        if (confirm('Are you sure you want to cancel this payment? This action will change the status to CANCELLED.')) {
+            document.getElementById('cancelPaymentForm').action = '/v1/transactions/' + transactionId + '/cancel-payment';
+            document.getElementById('cancelPaymentForm').submit();
+        }
+    }
+</script>
+
 @endsection

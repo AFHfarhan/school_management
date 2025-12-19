@@ -71,7 +71,7 @@
                                         $status = $data['status'] ?? 'pending';
                                         $created = $t->created_at ? $t->created_at->format('d/m/Y H:i:s') : '';
                                         $payment = $data['payment_date'] ?? '';
-                                        $badgeClass = $status === 'paid' ? 'success' : ($status === 'failed' ? 'danger' : 'warning');
+                                        $badgeClass = $status === 'paid' ? 'success' : ($status === 'failed' ? 'danger' : ($status === 'cancelled' ? 'secondary' : 'warning'));
                                     @endphp
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>

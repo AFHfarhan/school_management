@@ -11,8 +11,36 @@ class ComponentController extends Controller
 {
     public function index()
     {
-        $components = Component::orderBy('created_at', 'desc')->get();
-        return view('teacher.superadmin.managecomponent', compact('components'));
+        // Separate mandatory components from others
+        $mandatoryComponents = Component::where('category', 'mandatory')
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        $components = Component::where('category', '!=', 'mandatory')
+            ->orWhereNull('category')
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        return view('teacher.superadmin.managecomponent', compact('components', 'mandatoryComponents'));
+    }
+
+    public function getMandatoryComponent($name)
+    {
+        $component = Component::where('name', $name)
+            ->where('category', 'mandatory')
+            ->first();
+
+        if ($component) {
+            return response()->json([
+                'success' => true,
+                'component' => $component
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Component not found'
+        ]);
     }
 
     public function store(Request $request)
@@ -20,6 +48,7 @@ class ComponentController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'category' => 'nullable|string|max:100',
+            'upload_file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
             'data_raw' => [
                 'nullable',
                 'string',
@@ -83,14 +112,41 @@ class ComponentController extends Controller
             ],
         ]);
 
-        $dataRaw = $request->input('data_raw', '');
-        $data = $this->parseDataString($dataRaw);
+        $dataRaw = $request->input('data_raw') ?? '';
+        $data = $this->parseDataString((string) $dataRaw);
+
+        // Handle file upload for mandatory components
+        if ($request->hasFile('upload_file')) {
+            $file = $request->file('upload_file');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->move(public_path('global_assets/uploads'), $fileName);
+            
+            // Store file path in data
+            $data['uploads'] = 'global_assets/uploads/' . $fileName;
+        }
 
         $createdBy = Auth::guard('teacher')->id() ?? Auth::id() ?? null;
+        $category = $request->input('category');
+        
+        // For mandatory components, update or create
+        if ($category === 'mandatory') {
+            $component = Component::updateOrCreate(
+                [
+                    'name' => $request->input('name'),
+                    'category' => 'mandatory'
+                ],
+                [
+                    'data' => $data,
+                    'created_by' => $createdBy,
+                ]
+            );
+            
+            return redirect()->route('v1.component.manage')->with('success_mandatory', 'Mandatory component saved successfully');
+        }
 
         Component::create([
             'name' => $request->input('name'),
-            'category' => $request->input('category'),
+            'category' => $category,
             'data' => $data,
             'created_by' => $createdBy,
         ]);
@@ -100,7 +156,29 @@ class ComponentController extends Controller
 
     public function edit(Component $component)
     {
-        return view('teacher.superadmin.editsuperadmin', compact('component'));
+        // Prepare data display string, excluding 'uploads' key for mandatory components
+        $dataDisplay = '';
+        if ($component && $component->data) {
+            $dataToShow = $component->data;
+            
+            // For mandatory components, exclude the uploads key from display
+            if ($component->category === 'mandatory' && is_array($dataToShow) && isset($dataToShow['uploads'])) {
+                $dataToShow = array_filter($dataToShow, function($key) {
+                    return $key !== 'uploads';
+                }, ARRAY_FILTER_USE_KEY);
+            }
+            
+            if (is_array($dataToShow)) {
+                // Always encode arrays as JSON to preserve structure
+                if (!empty($dataToShow)) {
+                    $dataDisplay = json_encode($dataToShow, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                }
+            } else {
+                $dataDisplay = (string) $dataToShow;
+            }
+        }
+        
+        return view('teacher.superadmin.editsuperadmin', compact('component', 'dataDisplay'));
     }
 
     /**
@@ -129,6 +207,7 @@ class ComponentController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'category' => 'nullable|string|max:100',
+            'upload_file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
             'data_raw' => [
                 'nullable',
                 'string',
@@ -189,8 +268,21 @@ class ComponentController extends Controller
             ],
         ]);
 
-        $data = $this->parseDataString($request->input('data_raw', ''));
+        $data = $this->parseDataString((string) ($request->input('data_raw') ?? ''));
         $updatedBy = Auth::guard('teacher')->id() ?? Auth::id() ?? null;
+
+        // Handle file upload for mandatory components
+        if ($request->hasFile('upload_file')) {
+            $file = $request->file('upload_file');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('global_assets/uploads'), $fileName);
+            $data['uploads'] = 'global_assets/uploads/' . $fileName;
+        } else {
+            // Preserve existing file path if no new file uploaded
+            if (is_array($component->data) && isset($component->data['uploads'])) {
+                $data['uploads'] = $component->data['uploads'];
+            }
+        }
 
         $component->update([
             'name' => $request->input('name'),

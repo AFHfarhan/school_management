@@ -3,18 +3,20 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use SoftDeletes;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 
 class Student extends Model
 {
-    //// Specify the table if it's not named plural of the model
+    use SoftDeletes;
+
+    // Specify the table if it's not named plural of the model
     protected $table = 'students';
 
     // Set the fillable attributes (which can be mass-assigned)
     protected $fillable = [
         'name',
-        'data',  // JSON data field for additional student information
+        'data',  // JSON data field for all student information
     ];
 
     // Cast the `data` attribute to an array or object when retrieving it

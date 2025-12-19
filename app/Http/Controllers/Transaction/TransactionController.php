@@ -163,6 +163,32 @@ class TransactionController extends Controller
     }
 
     /**
+     * Cancel payment status
+     */
+    public function cancelPayment(Transaction $transaction)
+    {
+        $data = is_array($transaction->data) ? $transaction->data : json_decode($transaction->data, true);
+        
+        // Only allow cancellation if status is pending
+        $status = $data['status'] ?? 'pending';
+        if ($status !== 'pending') {
+            return redirect()->route('v1.transaction.show', $transaction->id)
+                ->with('error', 'Only pending payments can be cancelled.');
+        }
+
+        // Update status to cancelled
+        $data['status'] = 'cancelled';
+
+        $transaction->update([
+            'data' => $data,
+            'updated_by' => Auth::guard('teacher')->id() ?? Auth::id() ?? null,
+        ]);
+
+        return redirect()->route('v1.transaction.show', $transaction->id)
+            ->with('success', 'Payment has been cancelled successfully');
+    }
+
+    /**
      * Get transaction types from component table
      */
     private function getTransactionTypes()

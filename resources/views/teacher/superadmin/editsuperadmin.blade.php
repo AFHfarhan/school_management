@@ -33,7 +33,7 @@
                         <h6 class="m-0 font-weight-bold text-white">Edit Component</h6>
                     </div>
                     <div class="card-body">
-                        <form method="POST" action="{{ route('v1.component.update', $component->id) }}" id="editComponentForm">
+                        <form method="POST" action="{{ route('v1.component.update', $component->id) }}" id="editComponentForm" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
                             
@@ -76,21 +76,7 @@
                                     id="data_raw" 
                                     class="form-control @error('data_raw') is-invalid @enderror"
                                     rows="5"
-                                    placeholder='Supported formats:&#10;JSON: {"key":"value"}&#10;List: item1,item2,item3&#10;Key-Value: key1=value1,key2=value2'>@php
-$dataDisplay = '';
-if ($component && $component->data) {
-    if (is_array($component->data)) {
-        if (array_keys($component->data) === range(0, count($component->data) - 1)) {
-            $dataDisplay = implode(',', $component->data);
-        } else {
-            $dataDisplay = json_encode($component->data);
-        }
-    } else {
-        $dataDisplay = (string) $component->data;
-    }
-}
-echo old('data_raw', $dataDisplay);
-@endphp</textarea>
+                                    placeholder='Supported formats:&#10;JSON: {"key":"value"}&#10;List: item1,item2,item3&#10;Key-Value: key1=value1,key2=value2'>{{ old('data_raw', $dataDisplay ?? '') }}</textarea>
                                 <small class="form-text text-muted d-block mt-2">
                                     <strong>Supported Formats:</strong><br>
                                     • JSON Object: <code>{"name":"John","age":"30"}</code><br>
@@ -102,6 +88,38 @@ echo old('data_raw', $dataDisplay);
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            @if(isset($component->category) && $component->category === 'mandatory')
+                                @php
+                                    $uploadPath = null;
+                                    if (is_array($component->data) && isset($component->data['uploads'])) {
+                                        $uploadPath = $component->data['uploads'];
+                                    }
+                                @endphp
+                                @if($uploadPath)
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Current File</label>
+                                        <div>
+                                            <a href="{{ asset($uploadPath) }}" target="_blank" class="btn btn-sm btn-info">
+                                                <i class="fas fa-download"></i> View Current File
+                                            </a>
+                                        </div>
+                                    </div>
+                                @endif
+                                
+                                @if(in_array($component->name, ['School Logo', 'Surat Peringatan 1', 'Surat Peringatan 2', 'Surat Pemanggilan Orang Tua']))
+                                    <div class="form-group">
+                                        <label for="upload_file" class="font-weight-bold">Upload New File (Optional)</label>
+                                        <input 
+                                            type="file" 
+                                            name="upload_file" 
+                                            id="upload_file" 
+                                            class="form-control-file"
+                                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                        <small class="form-text text-muted">Accepted: PDF, DOC, DOCX, JPG, PNG (Max 5MB). Leave empty to keep current file.</small>
+                                    </div>
+                                @endif
+                            @endif
 
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary">

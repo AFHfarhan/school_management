@@ -53,6 +53,42 @@ Route::prefix('v1')->name('v1.')->group(function () {
         Route::get('transactions/{transaction}/update-payment', [\App\Http\Controllers\Transaction\TransactionController::class, 'updatePaymentForm'])
             ->name('transaction.updatePayment');
 
+        // Cancel payment
+        Route::post('transactions/{transaction}/cancel-payment', [\App\Http\Controllers\Transaction\TransactionController::class, 'cancelPayment'])
+            ->name('transaction.cancelPayment');
+
+        // Teacher attendance management (must be before student attendance routes with {id} parameter)
+        Route::get('attendance/teacher', [\App\Http\Controllers\Attendance\TeacherAttendanceController::class, 'index'])
+            ->name('attendance.teacher.index');
+        Route::post('attendance/teacher', [\App\Http\Controllers\Attendance\TeacherAttendanceController::class, 'store'])
+            ->name('attendance.teacher.store');
+        Route::get('attendance/teacher/history', [\App\Http\Controllers\Attendance\TeacherAttendanceController::class, 'history'])
+            ->name('attendance.teacher.history');
+        Route::get('attendance/teacher/detail/{id}', [\App\Http\Controllers\Attendance\TeacherAttendanceController::class, 'detail'])
+            ->name('attendance.teacher.detail');
+
+        // Student attendance routes
+        Route::get('attendance', [\App\Http\Controllers\Attendance\StudentAttendanceController::class, 'index'])
+            ->name('attendance.index');
+        Route::get('attendance/create', [\App\Http\Controllers\Attendance\StudentAttendanceController::class, 'create'])
+            ->name('attendance.create');
+        Route::get('attendance/search', [\App\Http\Controllers\Attendance\StudentAttendanceController::class, 'search'])
+            ->name('attendance.search');
+        Route::get('attendance/filter-students', [\App\Http\Controllers\Attendance\StudentAttendanceController::class, 'filterStudents'])
+            ->name('attendance.filterStudents');
+        Route::get('attendance/student/{id}', [\App\Http\Controllers\Attendance\StudentAttendanceController::class, 'studentDetail'])
+            ->name('attendance.studentDetail');
+        Route::get('attendance/download-warning-letter', [\App\Http\Controllers\Attendance\StudentAttendanceController::class, 'downloadWarningLetter'])
+            ->name('attendance.downloadWarningLetter');
+        Route::get('attendance/{id}', [\App\Http\Controllers\Attendance\StudentAttendanceController::class, 'show'])
+            ->name('attendance.show');
+        Route::get('attendance/{id}/edit', [\App\Http\Controllers\Attendance\StudentAttendanceController::class, 'edit'])
+            ->name('attendance.edit');
+        Route::put('attendance/{id}', [\App\Http\Controllers\Attendance\StudentAttendanceController::class, 'update'])
+            ->name('attendance.update');
+        Route::post('attendance', [\App\Http\Controllers\Attendance\StudentAttendanceController::class, 'store'])
+            ->name('attendance.store');
+
         Route::post('add', [StudentController::class, 'store'])->name('student.add');
         Route::post('teachers', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherManagementController::class, 'store'])->name('teacher.store');
         Route::get('teachers/manage', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherManagementController::class, 'index'])->name('teacher.manage');
@@ -62,12 +98,20 @@ Route::prefix('v1')->name('v1.')->group(function () {
             ->name('component.manage');
         Route::post('components', [\App\Http\Controllers\Teacher\SuperAdmin\ComponentController::class, 'store'])
             ->name('component.store');
+        Route::get('components/mandatory/{name}', [\App\Http\Controllers\Teacher\SuperAdmin\ComponentController::class, 'getMandatoryComponent'])
+            ->name('component.mandatory.get');
         Route::get('components/{component}/edit', [\App\Http\Controllers\Teacher\SuperAdmin\ComponentController::class, 'edit'])
             ->name('component.edit');
         Route::put('components/{component}', [\App\Http\Controllers\Teacher\SuperAdmin\ComponentController::class, 'update'])
             ->name('component.update');
         Route::delete('components/{component}', [\App\Http\Controllers\Teacher\SuperAdmin\ComponentController::class, 'destroy'])
             ->name('component.destroy');
+
+        // Teacher schedule management (superadmin)
+        Route::get('teachers/schedule/manage', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherScheduleController::class, 'manage'])
+            ->name('teacher.schedule.manage');
+        Route::post('teachers/schedule/upsert', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherScheduleController::class, 'upsert'])
+            ->name('teacher.schedule.upsert');
 
         // Teacher management (superadmin)
         Route::get('teachers/edit/{teacher}', [\App\Http\Controllers\Teacher\SuperAdmin\TeacherManagementController::class, 'edit'])

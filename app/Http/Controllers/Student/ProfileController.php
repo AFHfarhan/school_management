@@ -16,8 +16,14 @@ class ProfileController extends Controller
 
     public function index()
     {
+        // Only get students that have form_date in their data field
+        $students = Student::all()->filter(function ($student) {
+            $data = is_array($student->data) ? $student->data : json_decode($student->data, true);
+            return isset($data['form_date']);
+        });
+
         return view('student.index', [
-            'students' => Student::all(),
+            'students' => $students,
         ]);
     }
 

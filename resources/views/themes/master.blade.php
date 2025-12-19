@@ -170,6 +170,7 @@
     <script src="{{ asset('/global_assets/js/main.js') }}"></script>
 
     @yield('scripts')
+    @stack('scripts')
 
     <!-- Add at the bottom of your dashboard.blade.php -->
 <script>

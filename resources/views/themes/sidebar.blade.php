@@ -39,6 +39,7 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('v1.students.create')}}">Pendaftaran Siswa Baru</a>
                 <a class="collapse-item" href="{{ route('v1.students.index')}}">Daftar Siswa Baru</a>
+                <a class="collapse-item" href="#">Laporan PPDB</a>
             </div>
         </div>
     </li>
@@ -55,6 +56,7 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('v1.transaction.create', ['type' => 'ppdb']) }}">Buat Pembayaran PPDB</a>
                 <a class="collapse-item" href="{{ route('v1.transaction.index') }}">Daftar Pembayaran</a>
+                <a class="collapse-item" href="#">Laporan Pembayaran</a>
             </div>
         </div>
     </li>
@@ -69,9 +71,11 @@
         <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
             data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="/tambah_absensi_guru">Isi Absen Mengajar</a>
-                <a class="collapse-item" href="/tambah_absensi">Isi Absen Siswa</a>
-                <a class="collapse-item" href="/daftar_absensi">Daftar Absen</a>
+                <a class="collapse-item" href="{{ route('v1.attendance.teacher.index') }}">Isi Absen Guru</a>
+                <a class="collapse-item" href="{{ route('v1.attendance.teacher.history') }}">Daftar Absen Guru</a>
+                <a class="collapse-item" href="{{ route('v1.attendance.create') }}">Isi Absen Siswa</a>
+                <a class="collapse-item" href="{{ route('v1.attendance.index') }}">Daftar Absen Siswa</a>
+                <a class="collapse-item" href="#">Laporan Absen</a>
             </div>
         </div>
     </li>
@@ -106,6 +110,7 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('v1.teacher.manage') }}">Kelola Akun</a>
                 <a class="collapse-item" href="{{ route('v1.component.manage') }}">Kelola Data Sekolah</a>
+                <a class="collapse-item" href="{{ route('v1.teacher.schedule.manage') }}">Kelola Schedule Guru</a>
             </div>
         </div>
     </li>
