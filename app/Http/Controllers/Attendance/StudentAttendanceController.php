@@ -669,8 +669,309 @@ class StudentAttendanceController extends Controller
             return redirect()->back()->with('error', 'File surat ' . $letterName . ' tidak ditemukan. Silakan hubungi administrator untuk mengupload template.');
         }
 
-        // Return file download
-        $fileName = $type . '_' . str_replace(' ', '_', $student->name) . '_' . date('Y-m-d') . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
-        return response()->download(public_path($filePath), $fileName);
+        // Calculate start and end dates of absent period
+        $absentStartDate = null;
+        $absentEndDate = null;
+        if (!empty($absent)) {
+            // Sort absent records by date
+            usort($absent, function($a, $b) {
+                return strcmp($a['attendance_date'] ?? '', $b['attendance_date'] ?? '');
+            });
+            
+            $absentStartDate = $absent[0]['attendance_date'] ?? null;
+            $absentEndDate = $absent[count($absent) - 1]['attendance_date'] ?? null;
+        }
+
+        // Prepare replacement data
+        $replacements = [
+            '{{student_name}}' => $student->name,
+            '{{nama_siswa}}' => $student->name,
+            '{{STUDENT_NAME}}' => strtoupper($student->name),
+            '{{NAMA_SISWA}}' => strtoupper($student->name),
+            
+            '{{date}}' => date('d F Y'),
+            '{{tanggal}}' => date('d F Y'),
+            '{{DATE}}' => strtoupper(date('d F Y')),
+            '{{TANGGAL}}' => strtoupper(date('d F Y')),
+            
+            '{{start_date}}' => $absentStartDate ? date('d F Y', strtotime($absentStartDate)) : '-',
+            '{{tanggal_mulai}}' => $absentStartDate ? date('d F Y', strtotime($absentStartDate)) : '-',
+            '{{START_DATE}}' => $absentStartDate ? strtoupper(date('d F Y', strtotime($absentStartDate))) : '-',
+            '{{TANGGAL_MULAI}}' => $absentStartDate ? strtoupper(date('d F Y', strtotime($absentStartDate))) : '-',
+            
+            '{{end_date}}' => $absentEndDate ? date('d F Y', strtotime($absentEndDate)) : '-',
+            '{{tanggal_akhir}}' => $absentEndDate ? date('d F Y', strtotime($absentEndDate)) : '-',
+            '{{END_DATE}}' => $absentEndDate ? strtoupper(date('d F Y', strtotime($absentEndDate))) : '-',
+            '{{TANGGAL_AKHIR}}' => $absentEndDate ? strtoupper(date('d F Y', strtotime($absentEndDate))) : '-',
+            
+            '{{absent_count}}' => $absentCount,
+            '{{jumlah_absen}}' => $absentCount,
+            '{{ABSENT_COUNT}}' => $absentCount,
+            '{{JUMLAH_ABSEN}}' => $absentCount,
+            
+            '{{class}}' => $studentData['academic']['class'] ?? '-',
+            '{{kelas}}' => $studentData['academic']['class'] ?? '-',
+            '{{CLASS}}' => strtoupper($studentData['academic']['class'] ?? '-'),
+            '{{KELAS}}' => strtoupper($studentData['academic']['class'] ?? '-'),
+            
+            '{{parent_name}}' => $studentData['contact']['parent_name'] ?? '-',
+            '{{nama_orang_tua}}' => $studentData['contact']['parent_name'] ?? '-',
+            '{{PARENT_NAME}}' => strtoupper($studentData['contact']['parent_name'] ?? '-'),
+            '{{NAMA_ORANG_TUA}}' => strtoupper($studentData['contact']['parent_name'] ?? '-'),
+        ];
+
+        // Process the template file based on extension
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        $outputFileName = $type . '_' . str_replace(' ', '_', $student->name) . '_' . date('Y-m-d') . '.' . $extension;
+        
+        try {
+            // Ensure temp directory exists
+            $tempDir = storage_path('app/temp');
+            if (!is_dir($tempDir)) {
+                if (!@mkdir($tempDir, 0755, true)) {
+                    return redirect()->back()->with('error', 'Tidak dapat membuat direktori temp. Hubungi administrator.');
+                }
+            }
+            
+            $tempFile = $tempDir . DIRECTORY_SEPARATOR . $outputFileName;
+            
+            if ($extension === 'docx') {
+                // Handle DOCX files using PHPWord; if not available, fall back to raw template download
+                if (!class_exists('\\PhpOffice\\PhpWord\\TemplateProcessor')) {
+                    return response()->download(public_path($filePath), $outputFileName);
+                }
+                
+                try {
+                    $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(public_path($filePath));
+                    // Set values for each placeholder
+                    foreach ($replacements as $placeholder => $value) {
+                        $cleanPlaceholder = str_replace(['{{', '}}'], '', $placeholder);
+                        try {
+                            $templateProcessor->setValue($cleanPlaceholder, (string)$value);
+                        } catch (\Exception $e) {
+                            // Placeholder might not exist in template, continue
+                        }
+                    }
+                    $templateProcessor->saveAs($tempFile);
+                    if (!file_exists($tempFile)) {
+                        // Fallback to raw template download
+                        return response()->download(public_path($filePath), $outputFileName);
+                    }
+                    return response()->download($tempFile, $outputFileName)->deleteFileAfterSend(true);
+                } catch (\Exception $e) {
+                    // Any processing failure: download original template
+                    \Log::warning('DOCX processing failed, falling back to raw download', ['error' => $e->getMessage()]);
+                    return response()->download(public_path($filePath), $outputFileName);
+                }
+            } else {
+                // For other file types (txt, rtf, html, etc.), use simple string replacement
+                $content = file_get_contents(public_path($filePath));
+                
+                if ($content === false) {
+                    // As a last resort, try downloading the original template
+                    return response()->download(public_path($filePath), $outputFileName);
+                }
+                
+                foreach ($replacements as $placeholder => $value) {
+                    $content = str_replace($placeholder, (string)$value, $content);
+                }
+                
+                // Write to temp file
+                $bytesWritten = file_put_contents($tempFile, $content);
+                if ($bytesWritten === false) {
+                    // If writing fails, stream the content directly as a download
+                    $mime = $extension === 'rtf' ? 'application/rtf' : ($extension === 'html' || $extension === 'htm' ? 'text/html' : 'text/plain');
+                    return response($content)
+                        ->header('Content-Type', $mime)
+                        ->header('Content-Disposition', 'attachment; filename="' . $outputFileName . '"');
+                }
+                
+                // Verify file was created
+                if (!file_exists($tempFile)) {
+                    // Stream content if file cannot be found for any reason
+                    $mime = $extension === 'rtf' ? 'application/rtf' : ($extension === 'html' || $extension === 'htm' ? 'text/html' : 'text/plain');
+                    return response($content)
+                        ->header('Content-Type', $mime)
+                        ->header('Content-Disposition', 'attachment; filename="' . $outputFileName . '"');
+                }
+                
+                return response()->download($tempFile, $outputFileName)->deleteFileAfterSend(true);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Download letter error: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->back()->with('error', 'Gagal memproses template surat: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Preview warning letter with placeholders filled before download
+     */
+    public function previewWarningLetter(Request $request)
+    {
+        $studentId = $request->query('studentId');
+        $type = $request->query('type'); // sp1, sp2, sp_ortu
+
+        $student = Student::findOrFail($studentId);
+        $studentData = is_array($student->data) ? $student->data : json_decode($student->data, true);
+
+        // Get Tahun Ajaran range
+        $tahunAjaranComponent = Component::where('name', 'Tahun Ajaran')->first();
+        $startDate = null;
+        $endDate = null;
+        if ($tahunAjaranComponent && $tahunAjaranComponent->data) {
+            $tahunAjaranData = is_array($tahunAjaranComponent->data) ? $tahunAjaranComponent->data : json_decode($tahunAjaranComponent->data, true);
+            $startDate = $tahunAjaranData['startDate'] ?? null;
+            $endDate = $tahunAjaranData['endDate'] ?? null;
+        }
+
+        // Get absent count within Tahun Ajaran range
+        $absent = $studentData['absent'] ?? [];
+        if ($startDate && $endDate) {
+            $absent = array_values(array_filter($absent, function($record) use ($startDate, $endDate) {
+                $attendanceDate = $record['attendance_date'] ?? null;
+                if (!$attendanceDate) return false;
+                return $attendanceDate >= $startDate && $attendanceDate <= $endDate;
+            }));
+        }
+        $absentCount = count($absent);
+
+        // Determine letter name and validate thresholds
+        $letterName = '';
+        switch($type) {
+            case 'sp1':
+                $letterName = 'Surat Peringatan 1';
+                if ($absentCount < 5 || $absentCount > 9) {
+                    return redirect()->back()->with('error', 'Jumlah ketidakhadiran tidak memenuhi kriteria untuk Surat Peringatan 1 (5-9 hari).');
+                }
+                break;
+            case 'sp2':
+                $letterName = 'Surat Peringatan 2';
+                if ($absentCount < 10 || $absentCount > 14) {
+                    return redirect()->back()->with('error', 'Jumlah ketidakhadiran tidak memenuhi kriteria untuk Surat Peringatan 2 (10-14 hari).');
+                }
+                break;
+            case 'sp_ortu':
+                $letterName = 'Surat Pemanggilan Orang Tua';
+                if ($absentCount < 15) {
+                    return redirect()->back()->with('error', 'Jumlah ketidakhadiran tidak memenuhi kriteria untuk Surat Pemanggilan Orang Tua (>=15 hari).');
+                }
+                break;
+            default:
+                return redirect()->back()->with('error', 'Tipe surat tidak valid.');
+        }
+
+        // Get letter template from component table
+        $letterComponent = Component::where('name', $letterName)
+            ->where('category', 'mandatory')
+            ->first();
+
+        if (!$letterComponent) {
+            return redirect()->back()->with('error', 'Template surat ' . $letterName . ' tidak ditemukan.');
+        }
+
+        $letterData = is_array($letterComponent->data) ? $letterComponent->data : json_decode($letterComponent->data, true);
+        $filePath = $letterData['uploads'] ?? null;
+
+        if (!$filePath || !file_exists(public_path($filePath))) {
+            return redirect()->back()->with('error', 'File surat ' . $letterName . ' tidak ditemukan.');
+        }
+
+        // Calculate start and end dates of absent period
+        $absentStartDate = null;
+        $absentEndDate = null;
+        if (!empty($absent)) {
+            usort($absent, function($a, $b) {
+                return strcmp($a['attendance_date'] ?? '', $b['attendance_date'] ?? '');
+            });
+            $absentStartDate = $absent[0]['attendance_date'] ?? null;
+            $absentEndDate = $absent[count($absent) - 1]['attendance_date'] ?? null;
+        }
+
+        // Prepare replacements
+        $replacements = [
+            '{{student_name}}' => $student->name,
+            '{{nama_siswa}}' => $student->name,
+            '{{STUDENT_NAME}}' => strtoupper($student->name),
+            '{{NAMA_SISWA}}' => strtoupper($student->name),
+
+            '{{date}}' => date('d F Y'),
+            '{{tanggal}}' => date('d F Y'),
+            '{{DATE}}' => strtoupper(date('d F Y')),
+            '{{TANGGAL}}' => strtoupper(date('d F Y')),
+
+            '{{start_date}}' => $absentStartDate ? date('d F Y', strtotime($absentStartDate)) : '-',
+            '{{tanggal_mulai}}' => $absentStartDate ? date('d F Y', strtotime($absentStartDate)) : '-',
+            '{{START_DATE}}' => $absentStartDate ? strtoupper(date('d F Y', strtotime($absentStartDate))) : '-',
+            '{{TANGGAL_MULAI}}' => $absentStartDate ? strtoupper(date('d F Y', strtotime($absentStartDate))) : '-',
+
+            '{{end_date}}' => $absentEndDate ? date('d F Y', strtotime($absentEndDate)) : '-',
+            '{{tanggal_akhir}}' => $absentEndDate ? date('d F Y', strtotime($absentEndDate)) : '-',
+            '{{END_DATE}}' => $absentEndDate ? strtoupper(date('d F Y', strtotime($absentEndDate))) : '-',
+            '{{TANGGAL_AKHIR}}' => $absentEndDate ? strtoupper(date('d F Y', strtotime($absentEndDate))) : '-',
+
+            '{{absent_count}}' => $absentCount,
+            '{{jumlah_absen}}' => $absentCount,
+            '{{ABSENT_COUNT}}' => $absentCount,
+            '{{JUMLAH_ABSEN}}' => $absentCount,
+
+            '{{class}}' => $studentData['academic']['class'] ?? '-',
+            '{{kelas}}' => $studentData['academic']['class'] ?? '-',
+            '{{CLASS}}' => strtoupper($studentData['academic']['class'] ?? '-'),
+            '{{KELAS}}' => strtoupper($studentData['academic']['class'] ?? '-'),
+
+            '{{parent_name}}' => $studentData['contact']['parent_name'] ?? '-',
+            '{{nama_orang_tua}}' => $studentData['contact']['parent_name'] ?? '-',
+            '{{PARENT_NAME}}' => strtoupper($studentData['contact']['parent_name'] ?? '-'),
+            '{{NAMA_ORANG_TUA}}' => strtoupper($studentData['contact']['parent_name'] ?? '-'),
+        ];
+
+        // Decide preview strategy by file extension
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        $html = null;
+        $text = null;
+        $docxPreviewUnsupported = false;
+
+        try {
+            if (in_array($extension, ['html', 'htm'])) {
+                $content = file_get_contents(public_path($filePath));
+                foreach ($replacements as $placeholder => $value) {
+                    $content = str_replace($placeholder, e((string)$value), $content);
+                }
+                // HTML content may already contain markup; avoid double-escaping
+                // Since we used e() in replacement values, we can safely render the HTML template structure
+                $html = $content;
+            } elseif (in_array($extension, ['txt', 'rtf'])) {
+                $content = file_get_contents(public_path($filePath));
+                foreach ($replacements as $placeholder => $value) {
+                    $content = str_replace($placeholder, (string)$value, $content);
+                }
+                $text = $content;
+            } elseif ($extension === 'docx') {
+                // DOCX preview not supported; inform user and provide download action
+                $docxPreviewUnsupported = true;
+            } else {
+                // Default to text preview
+                $content = file_get_contents(public_path($filePath));
+                foreach ($replacements as $placeholder => $value) {
+                    $content = str_replace($placeholder, (string)$value, $content);
+                }
+                $text = $content;
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal memuat preview: ' . $e->getMessage());
+        }
+
+        $downloadUrl = route('v1.attendance.downloadWarningLetter', ['studentId' => $studentId, 'type' => $type]);
+
+        return view('attendance.showattendanceletter', [
+            'student' => $student,
+            'type' => $type,
+            'letterName' => $letterName,
+            'html' => $html,
+            'text' => $text,
+            'docxPreviewUnsupported' => $docxPreviewUnsupported,
+            'replacements' => $replacements,
+            'downloadUrl' => $downloadUrl,
+        ]);
     }
 }

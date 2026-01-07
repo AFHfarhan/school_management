@@ -39,7 +39,7 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('v1.students.create')}}">Pendaftaran Siswa Baru</a>
                 <a class="collapse-item" href="{{ route('v1.students.index')}}">Daftar Siswa Baru</a>
-                <a class="collapse-item" href="#">Laporan PPDB</a>
+                <a class="collapse-item" href="{{ route('v1.reports.students') }}">Laporan</a>
             </div>
         </div>
     </li>
@@ -56,7 +56,7 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{{ route('v1.transaction.create', ['type' => 'ppdb']) }}">Buat Pembayaran PPDB</a>
                 <a class="collapse-item" href="{{ route('v1.transaction.index') }}">Daftar Pembayaran</a>
-                <a class="collapse-item" href="#">Laporan Pembayaran</a>
+                <a class="collapse-item" href="{{ route('v1.reports.transactions') }}">Laporan</a>
             </div>
         </div>
     </li>
@@ -75,7 +75,8 @@
                 <a class="collapse-item" href="{{ route('v1.attendance.teacher.history') }}">Daftar Absen Guru</a>
                 <a class="collapse-item" href="{{ route('v1.attendance.create') }}">Isi Absen Siswa</a>
                 <a class="collapse-item" href="{{ route('v1.attendance.index') }}">Daftar Absen Siswa</a>
-                <a class="collapse-item" href="#">Laporan Absen</a>
+                <a class="collapse-item" href="{{ route('v1.reports.attendance.teachers') }}">Laporan Absen Guru</a>
+                <a class="collapse-item" href="{{ route('v1.reports.attendance.students') }}">Laporan Absen Siswa</a>
             </div>
         </div>
     </li>

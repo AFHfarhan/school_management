@@ -203,14 +203,23 @@
                                             </td>
                                             <td>
                                                 @if($absentCount >= 5 && $absentCount <= 9)
+                                                    <a href="{{ route('v1.attendance.previewWarningLetter', ['studentId' => $student['id'], 'type' => 'sp1']) }}" class="btn btn-sm btn-info" title="Preview SP 1">
+                                                        <i class="fas fa-eye"></i> Preview
+                                                    </a>
                                                     <a href="{{ route('v1.attendance.downloadWarningLetter', ['studentId' => $student['id'], 'type' => 'sp1']) }}" class="btn btn-sm btn-warning" title="Download SP 1">
                                                         <i class="fas fa-download"></i> SP 1
                                                     </a>
                                                 @elseif($absentCount >= 10 && $absentCount <= 14)
+                                                    <a href="{{ route('v1.attendance.previewWarningLetter', ['studentId' => $student['id'], 'type' => 'sp2']) }}" class="btn btn-sm btn-info" title="Preview SP 2">
+                                                        <i class="fas fa-eye"></i> Preview
+                                                    </a>
                                                     <a href="{{ route('v1.attendance.downloadWarningLetter', ['studentId' => $student['id'], 'type' => 'sp2']) }}" class="btn btn-sm btn-danger" title="Download SP 2">
                                                         <i class="fas fa-download"></i> SP 2
                                                     </a>
                                                 @elseif($absentCount >= 15)
+                                                    <a href="{{ route('v1.attendance.previewWarningLetter', ['studentId' => $student['id'], 'type' => 'sp_ortu']) }}" class="btn btn-sm btn-info" title="Preview SP Orang Tua">
+                                                        <i class="fas fa-eye"></i> Preview
+                                                    </a>
                                                     <a href="{{ route('v1.attendance.downloadWarningLetter', ['studentId' => $student['id'], 'type' => 'sp_ortu']) }}" class="btn btn-sm btn-dark" title="Download SP Orang Tua">
                                                         <i class="fas fa-download"></i> SP Ortu
                                                     </a>
