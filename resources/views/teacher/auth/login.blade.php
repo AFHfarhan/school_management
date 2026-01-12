@@ -22,6 +22,7 @@
 
                         <form class="login-form " method="post" action="{{ route('v1.login') }}">
                             @csrf
+                            <input type="hidden" name="timezone" id="timezone" value="">
                             <div class="form-group">
                                 <input type="email" class="form-control form-control-user"
                                     id="email" name="email" aria-describedby="emailHelp"
@@ -41,6 +42,22 @@
                             <button type="submit" href="" class="btn btn-primary btn-user btn-block">
                                 Login
                             </button>
+
+                            <script>
+                                (function(){
+                                    try {
+                                        var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                                        if (tz) {
+                                            var el = document.getElementById('timezone');
+                                            if (el) el.value = tz;
+                                            // persist as cookie for later requests (optional)
+                                            document.cookie = 'user_timezone=' + encodeURIComponent(tz) + '; path=/';
+                                        }
+                                    } catch(e) {
+                                        // ignore
+                                    }
+                                })();
+                            </script>
                             
                             <hr>
                             <!-- <a href="index.html" class="btn btn-google btn-user btn-block">

@@ -152,11 +152,25 @@
     <!-- before </body> -->
     <script src="{{ asset('/global_assets/vendor/flatpickr/flatpickr.min.js') }}"></script>
 
-    <!-- Page level custom scripts -->
-    <script src="{{ asset('/global_assets/js/demo/chart-area-demo.js') }}"></script>
-    <script src="{{ asset('/global_assets/js/demo/chart-pie-demo.js') }}"></script>
+    <!-- Page level custom scripts - Only load chart demos if elements exist -->
+    <script>
+        // Only initialize charts if canvas elements exist
+        if (document.getElementById("myAreaChart")) {
+            var script = document.createElement('script');
+            script.src = "{{ asset('/global_assets/js/demo/chart-area-demo.js') }}";
+            document.body.appendChild(script);
+        }
+        if (document.getElementById("myPieChart")) {
+            var script = document.createElement('script');
+            script.src = "{{ asset('/global_assets/js/demo/chart-pie-demo.js') }}";
+            document.body.appendChild(script);
+        }
+    </script>
     <script src="{{ asset('/global_assets/js/demo/datatables-demo.js') }}"></script>
     <script src="{{ asset('/global_assets/js/main.js') }}"></script>
+
+    @yield('scripts')
+    @stack('scripts')
 
     <!-- Add at the bottom of your dashboard.blade.php -->
 <script>

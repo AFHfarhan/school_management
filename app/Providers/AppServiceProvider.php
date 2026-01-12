@@ -3,6 +3,10 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+use App\Listeners\TeacherAuthEventListener;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +23,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // register teacher auth event listeners for login/logout
+        Event::listen(Login::class, [TeacherAuthEventListener::class, 'handleLogin']);
+        Event::listen(Logout::class, [TeacherAuthEventListener::class, 'handleLogout']);
     }
 }

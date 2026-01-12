@@ -51,6 +51,26 @@ class TeacherLoginRequest extends FormRequest
             ]);
         }
 
+        // Check if teacher is active (isActive = 1)
+        $teacher = Auth::guard('teacher')->user();
+        if ($teacher) {
+            $data = is_array($teacher->data) ? $teacher->data : json_decode($teacher->data, true);
+            $isActive = $data['isActive'] ?? 1;
+            
+            if ($isActive != 1) {
+                Auth::guard('teacher')->logout();
+                RateLimiter::hit($this->throttleKey());
+                
+                $message = $isActive == 2 
+                    ? 'Your account has been deactivated. Please contact the administrator.'
+                    : 'Your account is not active. Please contact the administrator.';
+                
+                throw ValidationException::withMessages([
+                    'email' => $message,
+                ]);
+            }
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 
