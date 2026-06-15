@@ -18,7 +18,7 @@ class ComponentSeeder extends Seeder
                 'structure' => 'school',
                 'name' => 'School Profile',
                 'description' => 'Default school profile configuration.',
-                'category' => 'default',
+                'category' => Component::CATEGORY_SCHOOL,
                 'data' => [
                     'school_name' => 'School Name',
                     'school_tagline' => 'Quality Education',
@@ -32,7 +32,7 @@ class ComponentSeeder extends Seeder
                 'structure' => 'branding',
                 'name' => 'School Branding',
                 'description' => 'Default branding and identity settings.',
-                'category' => 'default',
+                'category' => Component::CATEGORY_BRANDING,
                 'data' => [
                     'logo' => null,
                     'primary_color' => '#2563eb',
@@ -45,7 +45,7 @@ class ComponentSeeder extends Seeder
                 'structure' => 'academic',
                 'name' => 'Academic Setting',
                 'description' => 'Default academic and curriculum configuration.',
-                'category' => 'default',
+                'category' => Component::CATEGORY_ACADEMIC,
                 'data' => [
                     'academic_year' => '2026/2027',
                     'semester' => 'Odd Semester',
@@ -58,7 +58,7 @@ class ComponentSeeder extends Seeder
                 'structure' => 'registration',
                 'name' => 'Registration Setting',
                 'description' => 'Default student registration settings.',
-                'category' => 'default',
+                'category' => Component::CATEGORY_REGISTRATION,
                 'data' => [
                     'open_registration' => true,
                     'registration_fee' => 0,
@@ -71,7 +71,7 @@ class ComponentSeeder extends Seeder
                 'structure' => 'payment',
                 'name' => 'Payment Setting',
                 'description' => 'Default payment and fee configuration.',
-                'category' => 'default',
+                'category' => Component::CATEGORY_PAYMENT,
                 'data' => [
                     'currency' => 'IDR',
                     'payment_gateway' => 'manual',
@@ -84,7 +84,7 @@ class ComponentSeeder extends Seeder
                 'structure' => 'attendance',
                 'name' => 'Attendance Setting',
                 'description' => 'Default attendance tracking configuration.',
-                'category' => 'default',
+                'category' => Component::CATEGORY_ATTENDANCE,
                 'data' => [
                     'enable_face_recognition' => false,
                     'mark_late_after_minutes' => 15,

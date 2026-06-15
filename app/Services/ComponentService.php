@@ -9,8 +9,8 @@ use InvalidArgumentException;
 
 class ComponentService
 {
-    private const CACHE_PREFIX = 'component:';
-    private const ACTIVE_CACHE_KEY = 'components:active';
+    private const COMPONENT_CACHE_PREFIX = 'component:';
+    private const ACTIVE_COMPONENTS_CACHE_KEY = 'components:active';
 
     /**
      * Retrieve a component by its unique code.
@@ -47,7 +47,7 @@ class ComponentService
             throw new InvalidArgumentException("Component configuration '{$code}' was not found.");
         }
 
-        return $component->getDataValue($key, $default);
+        return $component->getConfig($key, $default);
     }
 
     /**
@@ -101,7 +101,7 @@ class ComponentService
      */
     public function allActive(): Collection
     {
-        return Cache::remember(self::ACTIVE_CACHE_KEY, now()->addMinutes(15), function (): Collection {
+        return Cache::remember(self::ACTIVE_COMPONENTS_CACHE_KEY, now()->addMinutes(15), function (): Collection {
             return Component::query()
                 ->active()
                 ->ordered()
@@ -117,7 +117,7 @@ class ComponentService
      */
     private function cacheKey(string $code): string
     {
-        return self::CACHE_PREFIX . $code;
+        return self::COMPONENT_CACHE_PREFIX . $code;
     }
 
     /**
@@ -129,7 +129,7 @@ class ComponentService
     private function clearComponentCache(string $code): void
     {
         Cache::forget($this->cacheKey($code));
-        Cache::forget(self::ACTIVE_CACHE_KEY);
+        Cache::forget(self::ACTIVE_COMPONENTS_CACHE_KEY);
     }
 
     /**
