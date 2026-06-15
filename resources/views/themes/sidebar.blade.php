@@ -50,7 +50,7 @@
             aria-expanded="true" aria-controls="collapsePayment">
             <i class="fas fa-fw fa-table"></i>
             <span>Pembayaran dan Pembiayaan</span>
-        </a>
+        </a> 
         <div id="collapsePayment" class="collapse" aria-labelledby="headingPayment"
             data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
