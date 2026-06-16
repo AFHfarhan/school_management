@@ -51,6 +51,22 @@ class ComponentService
     }
 
     /**
+     * Retrieve a school profile setting with a safe fallback.
+     */
+    public function getSchoolProfileValue(string $key, mixed $default = null): mixed
+    {
+        return $this->resolveValue(Component::CODE_SCHOOL_PROFILE, $key, $default);
+    }
+
+    /**
+     * Retrieve a branding setting with a safe fallback.
+     */
+    public function getBrandingValue(string $key, mixed $default = null): mixed
+    {
+        return $this->resolveValue(Component::CODE_SCHOOL_BRANDING, $key, $default);
+    }
+
+    /**
      * Create or update a component configuration entry.
      *
      * @param string $code
@@ -118,6 +134,15 @@ class ComponentService
     private function cacheKey(string $code): string
     {
         return self::COMPONENT_CACHE_PREFIX . $code;
+    }
+
+    private function resolveValue(string $code, string $key, mixed $default = null): mixed
+    {
+        try {
+            return $this->getValue($code, $key, $default);
+        } catch (InvalidArgumentException) {
+            return $default;
+        }
     }
 
     /**

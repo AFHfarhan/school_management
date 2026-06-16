@@ -1,4 +1,8 @@
 <!-- Sidebar -->
+@php
+    $componentService = app(\App\Services\ComponentService::class);
+    $schoolName = $componentService->getSchoolProfileValue('school_name', 'SMK SUKAMAKMUR');
+@endphp
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
@@ -6,7 +10,7 @@
         <!-- <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
         </div> -->
-        <div class="sidebar-brand-text mx-3">SMK SUKAMAKMUR</div>
+        <div class="sidebar-brand-text mx-3">{{ $schoolName }}</div>
     </a>
 
     <!-- Divider -->

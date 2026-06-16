@@ -38,6 +38,34 @@ class ComponentServiceTest extends TestCase
         $this->assertSame('School Profile', $service->get(Component::CODE_SCHOOL_PROFILE)?->name);
     }
 
+    public function test_school_identity_helpers_return_configured_values_with_fallbacks(): void
+    {
+        $service = $this->app->make(ComponentService::class);
+
+        $service->set(Component::CODE_SCHOOL_PROFILE, [
+            'name' => 'School Profile',
+            'category' => Component::CATEGORY_SCHOOL,
+            'data' => [
+                'school_name' => 'SMK SUKAMAKMUR',
+                'school_tagline' => 'Quality Education',
+            ],
+        ]);
+
+        $service->set(Component::CODE_SCHOOL_BRANDING, [
+            'name' => 'School Branding',
+            'category' => Component::CATEGORY_BRANDING,
+            'data' => [
+                'logo' => 'global_assets/img/logo_sman_sukamakmur.ico',
+                'favicon' => 'global_assets/img/logo_sman_sukamakmur.ico',
+            ],
+        ]);
+
+        $this->assertSame('SMK SUKAMAKMUR', $service->getSchoolProfileValue('school_name', 'School Name'));
+        $this->assertSame('Quality Education', $service->getSchoolProfileValue('school_tagline', 'Quality Education'));
+        $this->assertSame('global_assets/img/logo_sman_sukamakmur.ico', $service->getBrandingValue('favicon'));
+        $this->assertSame('global_assets/img/logo_sman_sukamakmur.ico', $service->getBrandingValue('logo'));
+    }
+
     public function test_component_seeder_uses_category_constants_and_remains_idempotent(): void
     {
         $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\ComponentSeeder'])->assertSuccessful();
