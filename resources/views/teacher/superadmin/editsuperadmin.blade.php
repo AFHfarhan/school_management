@@ -69,25 +69,62 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group">
-                                <label for="data_raw" class="font-weight-bold">Data</label>
-                                <textarea 
-                                    name="data_raw" 
-                                    id="data_raw" 
-                                    class="form-control @error('data_raw') is-invalid @enderror"
-                                    rows="5"
-                                    placeholder='Supported formats:&#10;JSON: {"key":"value"}&#10;List: item1,item2,item3&#10;Key-Value: key1=value1,key2=value2'>{{ old('data_raw', $dataDisplay ?? '') }}</textarea>
-                                <small class="form-text text-muted d-block mt-2">
-                                    <strong>Supported Formats:</strong><br>
-                                    • JSON Object: <code>{"name":"John","age":"30"}</code><br>
-                                    • JSON Array: <code>["item1","item2","item3"]</code><br>
-                                    • Key-Value Pairs: <code>key1=value1,key2=value2</code><br>
-                                    • Comma-Separated List: <code>item1,item2,item3</code>
-                                </small>
-                                @error('data_raw')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
+                            @if(isset($component) && $component->code === 'school_profile')
+                                @php
+                                    $profileData = is_array($component->data)
+                                        ? $component->data
+                                        : [];
+                                @endphp
+
+                                <input type="hidden" name="data_raw" id="generated_data_raw">
+
+                                <div class="form-group">
+                                    <label>School Name</label>
+                                    <input type="text"class="form-control" id="school_name" value="{{ $profileData['school_name'] ?? '' }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>School Tagline</label>
+                                    <input type="text" class="form-control" id="school_tagline" value="{{ $profileData['school_tagline'] ?? '' }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Address</label>
+                                    <textarea class="form-control" id="address" rows="3">{{ $profileData['address'] ?? '' }}</textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Phone</label>
+                                    <input type="text" class="form-control" id="phone" value="{{ $profileData['phone'] ?? '' }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" class="form-control" id="email" value="{{ $profileData['email'] ?? '' }}">
+                                </div>
+                            @endif
+
+                            @if(!isset($component) || $component->code !== 'school_profile')
+                                <div class="form-group">
+                                    <label for="data_raw" class="font-weight-bold">Data</label>
+                                    <textarea 
+                                        name="data_raw" 
+                                        id="data_raw" 
+                                        class="form-control @error('data_raw') is-invalid @enderror"
+                                        rows="5"
+                                        placeholder='Supported formats:&#10;JSON: {"key":"value"}&#10;List: item1,item2,item3&#10;Key-Value: key1=value1,key2=value2'>{{ old('data_raw', $dataDisplay ?? '') }}</textarea>
+                                    <small class="form-text text-muted d-block mt-2">
+                                        <strong>Supported Formats:</strong><br>
+                                        • JSON Object: <code>{"name":"John","age":"30"}</code><br>
+                                        • JSON Array: <code>["item1","item2","item3"]</code><br>
+                                        • Key-Value Pairs: <code>key1=value1,key2=value2</code><br>
+                                        • Comma-Separated List: <code>item1,item2,item3</code>
+                                    </small>
+                                    @error('data_raw')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            @endif
 
                             @if(isset($component->category) && $component->category === 'mandatory')
                                 @php
@@ -223,4 +260,33 @@
     @endif
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const form = document.getElementById('editComponentForm');
+
+    if (!form) {
+        return;
+    }
+
+    form.addEventListener('submit', function () {
+
+        const payload = {
+            school_name: document.getElementById('school_name')?.value || '',
+            school_tagline: document.getElementById('school_tagline')?.value || '',
+            address: document.getElementById('address')?.value || '',
+            phone: document.getElementById('phone')?.value || '',
+            email: document.getElementById('email')?.value || ''
+        };
+
+        const hiddenField = document.getElementById('generated_data_raw');
+
+        if (hiddenField) {
+            hiddenField.value = JSON.stringify(payload);
+        }
+    });
+
+});
+</script>
 @endsection

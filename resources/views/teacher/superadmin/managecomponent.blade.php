@@ -144,7 +144,7 @@
         <div class="col-lg-12">
             <div class="card shadow">
                 <div class="card-header py-3 bg-success">
-                    <h6 class="m-0 font-weight-bold text-white">Add Mandatory Component</h6>
+                    <h6 class="m-0 font-weight-bold text-white">Master Data Components | School Resources</h6>
                 </div>
                 <div class="card-body">
                     @if(session('success_mandatory'))
@@ -230,7 +230,7 @@
         <div class="col-lg-12">
             <div class="card shadow">
                 <div class="card-header py-3 bg-success">
-                    <h6 class="m-0 font-weight-bold text-white">Mandatory Components</h6>
+                    <h6 class="m-0 font-weight-bold text-white">Configured Resources</h6>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
