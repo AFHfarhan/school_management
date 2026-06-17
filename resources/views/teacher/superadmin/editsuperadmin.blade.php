@@ -104,7 +104,57 @@
                                 </div>
                             @endif
 
-                            @if(!isset($component) || $component->code !== 'school_profile')
+                            {{-- <pre>{{ print_r($component->data, true) }}</pre> --}}
+                            @if(isset($component) && $component->code === 'school_branding')
+                                @php
+                                    $brandingData = is_array($component->data)
+                                        ? $component->data
+                                        : [];
+                                @endphp
+
+                                <div class="form-group">
+                                    <label>Logo URL</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="branding_logo"
+                                        value="{{ $brandingData['logo'] ?? '' }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Favicon URL</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="branding_favicon"
+                                        value="{{ $brandingData['favicon'] ?? '' }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Primary Color</label>
+                                    <input
+                                        type="color"
+                                        class="form-control"
+                                        id="branding_primary_color"
+                                        value="{{ $brandingData['primary_color'] ?? '#2563eb' }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Secondary Color</label>
+                                    <input
+                                        type="color"
+                                        class="form-control"
+                                        id="branding_secondary_color"
+                                        value="{{ $brandingData['secondary_color'] ?? '#1f2937' }}">
+                                </div>
+
+                                <input
+                                    type="hidden"
+                                    name="data_raw"
+                                    id="branding_generated_data_raw">
+                            @endif
+
+                            @if(!isset($component) || !in_array($component->code,['school_profile', 'school_branding']))
                                 <div class="form-group">
                                     <label for="data_raw" class="font-weight-bold">Data</label>
                                     <textarea 
@@ -272,18 +322,49 @@ document.addEventListener('DOMContentLoaded', function () {
 
     form.addEventListener('submit', function () {
 
-        const payload = {
-            school_name: document.getElementById('school_name')?.value || '',
-            school_tagline: document.getElementById('school_tagline')?.value || '',
-            address: document.getElementById('address')?.value || '',
-            phone: document.getElementById('phone')?.value || '',
-            email: document.getElementById('email')?.value || ''
-        };
+        if (document.getElementById('branding_primary_color')) {
+            const payload = {
+                logo:
+                    document.getElementById('branding_logo')?.value || null,
 
-        const hiddenField = document.getElementById('generated_data_raw');
+                favicon:
+                    document.getElementById('branding_favicon')?.value || null,
 
-        if (hiddenField) {
-            hiddenField.value = JSON.stringify(payload);
+                primary_color:
+                    document.getElementById('branding_primary_color')?.value || '#2563eb',
+
+                secondary_color:
+                    document.getElementById('branding_secondary_color')?.value || '#1f2937'
+            };
+
+            document.getElementById(
+                'branding_generated_data_raw'
+            ).value = JSON.stringify(payload);
+
+            console.log(payload);
+            console.log(document.getElementById('branding_generated_data_raw').value);
+
+        }else{
+            const payload = {
+                school_name:
+                    document.getElementById('school_name')?.value || '',
+
+                school_tagline:
+                    document.getElementById('school_tagline')?.value || '',
+
+                address:
+                    document.getElementById('address')?.value || '',
+
+                phone:
+                    document.getElementById('phone')?.value || '',
+
+                email:
+                    document.getElementById('email')?.value || ''
+            };
+
+            document.getElementById(
+                'generated_data_raw'
+            ).value = JSON.stringify(payload);
         }
     });
 
