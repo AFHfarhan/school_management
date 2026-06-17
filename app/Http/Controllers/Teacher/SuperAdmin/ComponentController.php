@@ -6,9 +6,17 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Component;
+use App\Services\ComponentService;
+use Illuminate\Support\Str;
 
 class ComponentController extends Controller
 {
+    protected ComponentService $componentService;
+
+    public function __construct(ComponentService $componentService) {
+        $this->componentService = $componentService;
+    }
+
     public function index()
     {
         // Separate mandatory components from others
@@ -144,12 +152,19 @@ class ComponentController extends Controller
             return redirect()->route('v1.component.manage')->with('success_mandatory', 'Mandatory component saved successfully');
         }
 
+        $code = Str::slug($request->input('name'),'_');
+
         Component::create([
+            'code' => $code,
             'name' => $request->input('name'),
             'category' => $category,
             'data' => $data,
             'created_by' => $createdBy,
         ]);
+
+        if (!empty($component->code)) {
+            $this->componentService->flush($component->code);
+        }
 
         return redirect()->route('v1.component.manage')->with('success', 'Component added');
     }
@@ -290,6 +305,10 @@ class ComponentController extends Controller
             'data' => $data,
             'updated_by' => $updatedBy,
         ]);
+
+        if (!empty($component->code)) {
+            $this->componentService->flush($component->code);
+        }
 
         return redirect()->route('v1.component.manage')->with('success', 'Component updated');
     }

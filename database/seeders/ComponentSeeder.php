@@ -20,11 +20,11 @@ class ComponentSeeder extends Seeder
                 'description' => 'Default school profile configuration.',
                 'category' => Component::CATEGORY_SCHOOL,
                 'data' => [
-                    'school_name' => 'School Name',
-                    'school_tagline' => 'Quality Education',
-                    'address' => 'Main Street',
-                    'phone' => '0000000000',
-                    'email' => 'school@example.com',
+                    'school_name' => config('app.name','School Management System'),
+                    'school_tagline' => '',
+                    'address' => '',
+                    'phone' => '',
+                    'email' => '',
                 ],
             ],
             [
