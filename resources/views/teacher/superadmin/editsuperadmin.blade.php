@@ -69,25 +69,112 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group">
-                                <label for="data_raw" class="font-weight-bold">Data</label>
-                                <textarea 
-                                    name="data_raw" 
-                                    id="data_raw" 
-                                    class="form-control @error('data_raw') is-invalid @enderror"
-                                    rows="5"
-                                    placeholder='Supported formats:&#10;JSON: {"key":"value"}&#10;List: item1,item2,item3&#10;Key-Value: key1=value1,key2=value2'>{{ old('data_raw', $dataDisplay ?? '') }}</textarea>
-                                <small class="form-text text-muted d-block mt-2">
-                                    <strong>Supported Formats:</strong><br>
-                                    • JSON Object: <code>{"name":"John","age":"30"}</code><br>
-                                    • JSON Array: <code>["item1","item2","item3"]</code><br>
-                                    • Key-Value Pairs: <code>key1=value1,key2=value2</code><br>
-                                    • Comma-Separated List: <code>item1,item2,item3</code>
-                                </small>
-                                @error('data_raw')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
+                            @if(isset($component) && $component->code === 'school_profile')
+                                @php
+                                    $profileData = is_array($component->data)
+                                        ? $component->data
+                                        : [];
+                                @endphp
+
+                                <input type="hidden" name="data_raw" id="generated_data_raw">
+
+                                <div class="form-group">
+                                    <label>School Name</label>
+                                    <input type="text"class="form-control" id="school_name" value="{{ $profileData['school_name'] ?? '' }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>School Tagline</label>
+                                    <input type="text" class="form-control" id="school_tagline" value="{{ $profileData['school_tagline'] ?? '' }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Address</label>
+                                    <textarea class="form-control" id="address" rows="3">{{ $profileData['address'] ?? '' }}</textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Phone</label>
+                                    <input type="text" class="form-control" id="phone" value="{{ $profileData['phone'] ?? '' }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" class="form-control" id="email" value="{{ $profileData['email'] ?? '' }}">
+                                </div>
+                            @endif
+
+                            {{-- <pre>{{ print_r($component->data, true) }}</pre> --}}
+                            @if(isset($component) && $component->code === 'school_branding')
+                                @php
+                                    $brandingData = is_array($component->data)
+                                        ? $component->data
+                                        : [];
+                                @endphp
+
+                                <div class="form-group">
+                                    <label>Logo URL</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="branding_logo"
+                                        value="{{ $brandingData['logo'] ?? '' }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Favicon URL</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="branding_favicon"
+                                        value="{{ $brandingData['favicon'] ?? '' }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Primary Color</label>
+                                    <input
+                                        type="color"
+                                        class="form-control"
+                                        id="branding_primary_color"
+                                        value="{{ $brandingData['primary_color'] ?? '#2563eb' }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Secondary Color</label>
+                                    <input
+                                        type="color"
+                                        class="form-control"
+                                        id="branding_secondary_color"
+                                        value="{{ $brandingData['secondary_color'] ?? '#1f2937' }}">
+                                </div>
+
+                                <input
+                                    type="hidden"
+                                    name="data_raw"
+                                    id="branding_generated_data_raw">
+                            @endif
+
+                            @if(!isset($component) || !in_array($component->code,['school_profile', 'school_branding']))
+                                <div class="form-group">
+                                    <label for="data_raw" class="font-weight-bold">Data</label>
+                                    <textarea 
+                                        name="data_raw" 
+                                        id="data_raw" 
+                                        class="form-control @error('data_raw') is-invalid @enderror"
+                                        rows="5"
+                                        placeholder='Supported formats:&#10;JSON: {"key":"value"}&#10;List: item1,item2,item3&#10;Key-Value: key1=value1,key2=value2'>{{ old('data_raw', $dataDisplay ?? '') }}</textarea>
+                                    <small class="form-text text-muted d-block mt-2">
+                                        <strong>Supported Formats:</strong><br>
+                                        • JSON Object: <code>{"name":"John","age":"30"}</code><br>
+                                        • JSON Array: <code>["item1","item2","item3"]</code><br>
+                                        • Key-Value Pairs: <code>key1=value1,key2=value2</code><br>
+                                        • Comma-Separated List: <code>item1,item2,item3</code>
+                                    </small>
+                                    @error('data_raw')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            @endif
 
                             @if(isset($component->category) && $component->category === 'mandatory')
                                 @php
@@ -223,4 +310,64 @@
     @endif
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const form = document.getElementById('editComponentForm');
+
+    if (!form) {
+        return;
+    }
+
+    form.addEventListener('submit', function () {
+
+        if (document.getElementById('branding_primary_color')) {
+            const payload = {
+                logo:
+                    document.getElementById('branding_logo')?.value || null,
+
+                favicon:
+                    document.getElementById('branding_favicon')?.value || null,
+
+                primary_color:
+                    document.getElementById('branding_primary_color')?.value || '#2563eb',
+
+                secondary_color:
+                    document.getElementById('branding_secondary_color')?.value || '#1f2937'
+            };
+
+            document.getElementById(
+                'branding_generated_data_raw'
+            ).value = JSON.stringify(payload);
+
+            console.log(payload);
+            console.log(document.getElementById('branding_generated_data_raw').value);
+
+        }else{
+            const payload = {
+                school_name:
+                    document.getElementById('school_name')?.value || '',
+
+                school_tagline:
+                    document.getElementById('school_tagline')?.value || '',
+
+                address:
+                    document.getElementById('address')?.value || '',
+
+                phone:
+                    document.getElementById('phone')?.value || '',
+
+                email:
+                    document.getElementById('email')?.value || ''
+            };
+
+            document.getElementById(
+                'generated_data_raw'
+            ).value = JSON.stringify(payload);
+        }
+    });
+
+});
+</script>
 @endsection

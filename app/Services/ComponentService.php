@@ -171,4 +171,10 @@ class ComponentService
             throw new InvalidArgumentException('Component code cannot be empty.');
         }
     }
+
+    //for clear cache that related to component, can be used in controller or command after update component data
+    public function flush(string $code): void
+    {
+        $this->clearComponentCache($code);
+    }
 }

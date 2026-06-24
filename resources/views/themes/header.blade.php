@@ -1,9 +1,4 @@
 <head>
-    @php
-        $componentService = app(\App\Services\ComponentService::class);
-        $favicon = $componentService->getBrandingValue('favicon', asset('global_assets/img/logo_sman_sukamakmur.ico'));
-    @endphp
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -13,7 +8,7 @@
     <title>@yield('page_title')</title>
 
     <!-- Favicon -->
-        <link rel="icon" type="image/x-icon" href="{{ $favicon }}">
+        <link rel="icon"type="image/x-icon" href="{{ $branding['favicon'] }}">
 
 
     <!-- Custom fonts for this template-->

@@ -6,13 +6,145 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Kelola Data Sekolah dan Lainnya</h1>
     </div>
+    
+    <div class="mb-4">
+        <h4 class="font-weight-bold text-primary">
+            School Configuration Center
+        </h4>
+
+        <p class="text-muted">
+            Manage school profile, branding, academic, registration, payment and attendance settings.
+        </p>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="card shadow border-left-primary h-100">
+                <div class="card-body">
+                    <h5 class="font-weight-bold">
+                        School Profile
+                    </h5>
+
+                    <p class="text-muted mb-3">
+                        School identity and contact information.
+                    </p>
+
+                    <a href="#school-profile-section"
+                    class="btn btn-primary btn-sm">
+                        Configure
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="card shadow border-left-success h-100">
+                <div class="card-body">
+                    <h5 class="font-weight-bold">
+                        School Branding
+                    </h5>
+
+                    <p class="text-muted mb-3">
+                        Logo, favicon and visual identity.
+                    </p>
+
+                    <a href="#school-branding-section"
+                    class="btn btn-success btn-sm">
+                        Configure
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="card shadow border-left-info h-100">
+                <div class="card-body">
+                    <h5 class="font-weight-bold">
+                        Academic Setting
+                    </h5>
+
+                    <p class="text-muted mb-3">
+                        Academic year and semester configuration.
+                    </p>
+
+                    <a href="#academic-setting-section"
+                    class="btn btn-info btn-sm">
+                        Configure
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row mb-4">
+
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="card shadow border-left-warning h-100">
+                <div class="card-body">
+                    <h5 class="font-weight-bold">
+                        Registration Setting
+                    </h5>
+
+                    <p class="text-muted mb-3">
+                        Student registration configuration.
+                    </p>
+
+                    <a href="#registration-setting-section"
+                    class="btn btn-warning btn-sm">
+                        Configure
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="card shadow border-left-danger h-100">
+                <div class="card-body">
+                    <h5 class="font-weight-bold">
+                        Payment Setting
+                    </h5>
+
+                    <p class="text-muted mb-3">
+                        Payment and billing configuration.
+                    </p>
+
+                    <a href="#payment-setting-section"
+                    class="btn btn-danger btn-sm">
+                        Configure
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="card shadow border-left-secondary h-100">
+                <div class="card-body">
+                    <h5 class="font-weight-bold">
+                        Attendance Setting
+                    </h5>
+
+                    <p class="text-muted mb-3">
+                        Attendance rules and policy settings.
+                    </p>
+
+                    <a href="#attendance-setting-section"
+                    class="btn btn-secondary btn-sm">
+                        Configure
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
     <!-- SECTION 1: ADD MANDATORY COMPONENT FORM -->
+    <div id="school-profile-section"></div>
     <div class="row mb-4">
         <div class="col-lg-12">
             <div class="card shadow">
                 <div class="card-header py-3 bg-success">
-                    <h6 class="m-0 font-weight-bold text-white">Add Mandatory Component</h6>
+                    <h6 class="m-0 font-weight-bold text-white">Master Data Components | School Resources</h6>
                 </div>
                 <div class="card-body">
                     @if(session('success_mandatory'))
@@ -98,7 +230,7 @@
         <div class="col-lg-12">
             <div class="card shadow">
                 <div class="card-header py-3 bg-success">
-                    <h6 class="m-0 font-weight-bold text-white">Mandatory Components</h6>
+                    <h6 class="m-0 font-weight-bold text-white">Configured Resources</h6>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -293,6 +425,11 @@
                 <div class="card-header py-3 bg-primary">
                     <h6 class="m-0 font-weight-bold text-white">Other Components List</h6>
                 </div>
+                <div id="school-branding-section"></div>
+                <div id="academic-setting-section"></div>
+                <div id="registration-setting-section"></div>
+                <div id="payment-setting-section"></div>
+                <div id="attendance-setting-section"></div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover" id="componentsTable" width="100%">
